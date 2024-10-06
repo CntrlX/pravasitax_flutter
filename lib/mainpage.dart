@@ -1,4 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:pravasitax_flutter/src/interface/screens/chat_nav/chat_page.dart';
+import 'package:pravasitax_flutter/src/interface/screens/feed_nav/feed_page.dart';
+import 'package:pravasitax_flutter/src/interface/screens/forum_nav/forum_page.dart';
+import 'package:pravasitax_flutter/src/interface/screens/i_hub_nav/hub_page.dart';
+import 'package:pravasitax_flutter/src/interface/screens/main_pages/home_page.dart';
+import 'package:pravasitax_flutter/src/interface/screens/main_pages/notification.dart'; 
+import 'package:pravasitax_flutter/src/interface/screens/main_pages/profile_page.dart'; // Import ProfilePage
 
 class MainPage extends StatefulWidget {
   @override
@@ -8,18 +16,29 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   int _selectedIndex = 0;
 
+  // List of pages to display for each tab
   final List<Widget> _widgetOptions = <Widget>[
-    Center(child: Text('Home Page')),
-    Center(child: Text('I Hub Page')),
-    Center(child: Text('Feeds Page')),
-    Center(child: Text('Forum Page')),
-    Center(child: Text('Chat Page')),
+    HomePage(),  // Home PageP
+    FeedPage(),  // Feed Page 
+    HubPage(),  // I-Hub Page
+    ForumPage(),  // Forum Page
+    ChatPage(),  // Chat Page
   ];
 
+  // Method to update the selected index when an item is tapped
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  // Helper method to dynamically build the navigation icons
+  Widget _buildNavBarIcon(String activeIcon, String inactiveIcon, int index) {
+    return SvgPicture.asset(
+      _selectedIndex == index ? activeIcon : inactiveIcon,
+      height: 24,
+      width: 24,
+    );
   }
 
   @override
@@ -29,50 +48,93 @@ class _MainPageState extends State<MainPage> {
         title: Row(
           children: [
             Image.asset(
-              'assets/pravasi_tax_logo.png',
-              height: 30,
-              width: 30,
+              'assets/pravasi_logo.png', // Pravasi Tax logo
+              height: 40,  // Adjusted size
+              width: 90,
             ),
             SizedBox(width: 8),
-            Text('Pravasi Tax'),
           ],
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.notifications),
+            icon: Icon(Icons.notifications_active_outlined), // Notification icon
             onPressed: () {
-              // Handle notification icon press
+              // Navigate to NotificationPage when pressed
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => NotificationPage()),
+              );
             },
+          ),
+          GestureDetector(
+            onTap: () {
+              // Navigate to ProfilePage when the profile image is tapped
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ProfilePage()),
+              );
+            },
+            child: CircleAvatar(
+              backgroundImage: NetworkImage(
+                'https://example.com/profile_pic.png', // Replace with actual URL for profile image
+              ),
+              radius: 20,
+            ),
           ),
         ],
       ),
+      
+      // The body will dynamically change based on the selected index
       body: _widgetOptions[_selectedIndex],
+
+      // Bottom Navigation Bar
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+            icon: _buildNavBarIcon(
+              'assets/icons/home_active.svg',
+              'assets/icons/home_inactive.svg',
+              0,
+            ),
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.info),
-            label: 'I Hub',
+            icon: _buildNavBarIcon(
+              'assets/icons/feed_active.svg',
+              'assets/icons/feed_inactive.svg',
+              1,
+            ),
+            label: 'Feed',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.rss_feed),
-            label: 'Feeds',
+            icon: _buildNavBarIcon(
+              'assets/icons/ihub_active.svg',
+              'assets/icons/ihub_inactive.svg',
+              2,
+            ),
+            label: 'I-Hub',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.forum),
+            icon: _buildNavBarIcon(
+              'assets/icons/forum_active.svg',
+              'assets/icons/forum_inactive.svg',
+              3,
+            ),
             label: 'Forum',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.chat),
+            icon: _buildNavBarIcon(
+              'assets/icons/chat_active.svg',
+              'assets/icons/chat_inactive.svg',
+              4,
+            ),
             label: 'Chat',
           ),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.blue,
-        onTap: _onItemTapped,
+        unselectedItemColor: Colors.grey,
+        onTap: _onItemTapped,  // Call _onItemTapped when an item is tapped
       ),
     );
   }
