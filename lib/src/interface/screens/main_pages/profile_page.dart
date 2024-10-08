@@ -226,6 +226,15 @@ class EditProfilePage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Center(
+              child: CircleAvatar(
+                radius: 70,
+                backgroundImage: NetworkImage(
+                  'https://example.com/profile_picture.jpg', // Replace with the URL of the profile picture
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
             const TextField(
               decoration: InputDecoration(
                 labelText: "Name",
@@ -239,12 +248,30 @@ class EditProfilePage extends StatelessWidget {
                 border: OutlineInputBorder(),
               ),
             ),
+             const SizedBox(height: 16),
+             const TextField(
+              decoration: InputDecoration(
+                labelText: "Email ID",
+                border: OutlineInputBorder(),
+              ),
+            ),
+             const SizedBox(height: 16),
+             const TextField(
+              decoration: InputDecoration(
+                labelText: "DOB",
+                border: OutlineInputBorder(),
+              ),
+            ),
+             const SizedBox(height: 16),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
                 // Handle save profile changes
               },
-              child: const Text("Save"),
+                child: const Text(
+                "Proceed",
+                style: TextStyle(color: Colors.black),
+                ),
             ),
           ],
         ),
