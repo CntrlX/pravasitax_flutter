@@ -74,11 +74,14 @@ class _MainPageState extends State<MainPage> {
                 MaterialPageRoute(builder: (context) => ProfilePage()),
               );
             },
-            child: CircleAvatar(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0), // Add padding
+              child: CircleAvatar(
               backgroundImage: NetworkImage(
                 'https://example.com/profile_pic.png', // Replace with actual URL for profile image
               ),
               radius: 20,
+              ),
             ),
           ),
         ],
