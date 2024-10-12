@@ -128,7 +128,7 @@ class BlogsSection extends StatelessWidget {
         SizedBox(height: 8),
         Container(
           padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          color: Color(0x66A9F3C7),
+          color: Color(0xFF66A9F3C7),
           child: Text(
             'LAND TAX',
             style: TextStyle(
