@@ -12,7 +12,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/
-     - assets/icons/
+    - assets/icons/
     - assets/pravasi_logo.png
     - assets/icons/home_active.svg
     - assets/icons/home_inactive.svg
