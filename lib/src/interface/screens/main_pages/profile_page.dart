@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:pravasitax_flutter/src/interface/screens/menu_pages/documents.dart';
+import 'package:pravasitax_flutter/src/interface/screens/menu_pages/help_center.dart';
 import 'package:pravasitax_flutter/src/interface/screens/menu_pages/my_filings.dart';
 import 'package:pravasitax_flutter/src/interface/screens/menu_pages/about.dart';
+import 'package:pravasitax_flutter/src/interface/screens/menu_pages/my_posts.dart';
 import 'package:pravasitax_flutter/src/interface/screens/menu_pages/privacy_policy.dart';
+import 'package:pravasitax_flutter/src/interface/screens/menu_pages/saved_news.dart';
+import 'package:pravasitax_flutter/src/interface/screens/menu_pages/subscriptions.dart';
 import 'package:pravasitax_flutter/src/interface/screens/menu_pages/termsandconditions.dart';
+import 'package:pravasitax_flutter/src/interface/screens/menu_pages/notification_setting.dart';
 
 class ProfilePage extends StatelessWidget {
   @override
@@ -40,11 +46,10 @@ class ProfilePage extends StatelessWidget {
                       width: 70,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
-                        // Placeholder in case of error (e.g. network failure)
                         return Container(
                           width: 70,
                           height: 70,
-                          color: Colors.grey, // Gray color placeholder
+                          color: Colors.grey,
                           child: const Icon(Icons.person, color: Colors.white),
                         );
                       },
@@ -71,10 +76,99 @@ class ProfilePage extends StatelessWidget {
                   const Spacer(),
                   TextButton(
                     onPressed: () {
-                      // Navigate to Edit Profile Page
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => EditProfilePage()),
+                      // Display the modal bottom sheet directly on 'Edit' button press
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                        ),
+                        builder: (BuildContext context) {
+                          return Padding(
+                            padding: EdgeInsets.only(
+                              left: 16,
+                              right: 16,
+                              top: 16,
+                              bottom: MediaQuery.of(context).viewInsets.bottom,
+                            ),
+                           child: Wrap(
+  children: [
+    Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Close Icon at the top-right corner
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.close, color: Colors.black),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the bottom sheet
+              },
+            ),
+          ],
+        ),
+        Center(
+          child: CircleAvatar(
+            radius: 70,
+            backgroundImage: NetworkImage(
+              'https://example.com/profile_picture.jpg',
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        const TextField(
+          decoration: InputDecoration(
+            labelText: "Name",
+            border: OutlineInputBorder(),
+          ),
+        ),
+        const SizedBox(height: 16),
+        const TextField(
+          decoration: InputDecoration(
+            labelText: "Phone Number",
+            border: OutlineInputBorder(),
+          ),
+        ),
+        const SizedBox(height: 16),
+        const TextField(
+          decoration: InputDecoration(
+            labelText: "Email ID",
+            border: OutlineInputBorder(),
+          ),
+        ),
+        const SizedBox(height: 16),
+        const TextField(
+          decoration: InputDecoration(
+            labelText: "DOB",
+            border: OutlineInputBorder(),
+          ),
+        ),
+        const SizedBox(height: 16),
+        Center(
+          child: ElevatedButton(
+            onPressed: () {},
+            child: const Text(
+              "Proceed",
+              style: TextStyle(color: Colors.black),
+            ),
+            
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFF9B406),
+              padding: const EdgeInsets.symmetric(horizontal: 185, vertical: 18),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+          ),
+        ),
+      ],
+    ),
+  ],
+),
+
+                          );
+                        },
                       );
                     },
                     child: const Text(
@@ -85,44 +179,67 @@ class ProfilePage extends StatelessWidget {
                 ],
               ),
             ),
-            // Section Title
             _buildSectionHeader('ACCOUNT'),
 
-            // Menu List Items
-            _buildListTile(context, Icons.help_outline, 'Help Center'),
+            _buildListTile(context, Icons.help_outline, 'Help Center',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => HelpCenterPage()),
+                );
+              },
+            ),
             Container(color: Color(0xFFD9D9D9), height: 1),
-             _buildListTile(
+            _buildListTile(
               context,
               Icons.rule,
               'My Filings',
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) => MyFilingsPage()),
+                  MaterialPageRoute(builder: (context) => MyFilingsPage()),
                 );
               },
             ),
             Container(color: Color(0xFFD9D9D9), height: 1),
-            
-              _buildListTile(
+            _buildListTile(
               context,
               Icons.rule,
               'About Us',
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) => AboutPage()),
+                  MaterialPageRoute(builder: (context) => AboutPage()),
                 );
               },
             ),
             Container(color: Color(0xFFD9D9D9), height: 1),
-            _buildListTile(context, Icons.file_present_outlined, 'Documents'),
+            _buildListTile(context, Icons.file_present_outlined, 'Documents',
+               onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => DocumentsPage()),
+                );
+              },
+            ),
             Container(color: Color(0xFFD9D9D9), height: 1),
-            _buildListTile(context, Icons.subscriptions_outlined, 'Subscriptions'),
+            _buildListTile(context, Icons.subscriptions_outlined, 'Subscriptions',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SubscriptionsPage()),
+                );
+              },
+            ),
             Container(color: Color(0xFFD9D9D9), height: 1),
-            _buildListTile(context, Icons.post_add_outlined, 'My Posts'),
+            _buildListTile(context, Icons.post_add_outlined, 'My Posts',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MyPostsPage()),
+                );
+              },
+            ),
             Container(color: Color(0xFFD9D9D9), height: 1),
             _buildListTile(
               context,
@@ -131,38 +248,47 @@ class ProfilePage extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) => PrivacyPolicyPage()),
+                  MaterialPageRoute(builder: (context) => PrivacyPolicyPage()),
                 );
               },
             ),
-
-      
             Container(color: Color(0xFFD9D9D9), height: 1),
-            _buildListTile(context, Icons.save_alt_outlined, 'Saved News'),
+            _buildListTile(context, Icons.save_alt_outlined, 'Saved News',
+             onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SavedNewsPage()),
+                ),
+            ),
             Container(color: Color(0xFFD9D9D9), height: 1),
-             _buildListTile(
+            _buildListTile(
               context,
               Icons.rule,
               'Terms and Conditions',
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) => TermsAndConditionsPage()),
+                  MaterialPageRoute(builder: (context) => TermsAndConditionsPage()),
                 );
               },
             ),
             Container(color: Color(0xFFD9D9D9), height: 1),
-            _buildListTile(context, Icons.rule_outlined, 'Notification Settings'),
+            _buildListTile(
+              context,
+              Icons.rule_outlined,
+              'Notification Settings',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => NotificationSettingsPage()),
+                );
+              },
+            ),
             Container(color: Color(0xFFF2F2F2), height: 15),
             _buildListTile(context, Icons.logout, 'Logout', onTap: () {
-              // Handle Logout
               _showLogoutDialog(context);
             }),
             Container(color: Color(0xFFF2F2F2), height: 15),
             _buildListTile(context, Icons.delete_forever, 'Delete Account', onTap: () {
-              // Handle Delete Account
               _showDeleteAccountDialog(context);
             }),
             Container(color: Color(0xFFF2F2F2), height: 100),
@@ -174,7 +300,6 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  // Helper Method to build section header
   Widget _buildSectionHeader(String title) {
     return Container(
       width: double.infinity,
@@ -190,7 +315,6 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  // Helper Method to build each ListTile
   Widget _buildListTile(BuildContext context, IconData icon, String title,
       {Function()? onTap}) {
     return ListTile(
@@ -200,7 +324,7 @@ class ProfilePage extends StatelessWidget {
       ),
       title: Text(title, style: const TextStyle(color: Colors.black)),
       trailing: SvgPicture.asset(
-        'assets/icons/polygon.svg', // Add the correct path to your asset
+        'assets/icons/polygon.svg',
         height: 16,
         width: 16,
         color: const Color(0xFFC4C4C4),
@@ -209,7 +333,6 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  // Helper Method to show Logout Confirmation Dialog
   void _showLogoutDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -220,13 +343,13 @@ class ProfilePage extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Close dialog
+                Navigator.of(context).pop();
               },
               child: const Text("Cancel"),
             ),
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Handle actual logout logic
+                Navigator.of(context).pop();
               },
               child: const Text("Logout"),
             ),
@@ -236,7 +359,6 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  // Helper Method to show Delete Account Confirmation Dialog
   void _showDeleteAccountDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -247,114 +369,19 @@ class ProfilePage extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Close dialog
+                Navigator.of(context).pop();
               },
               child: const Text("Cancel"),
             ),
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Handle account deletion logic
+                Navigator.of(context).pop();
               },
               child: const Text("Delete"),
             ),
           ],
         );
       },
-    );
-  }
-}
-
-// Edit Profile Page
-
-
-class EditProfilePage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: () {
-        showModalBottomSheet(
-          context: context,
-          isScrollControlled: true,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-          ),
-          builder: (BuildContext context) {
-            return Padding(
-              padding: EdgeInsets.only(
-                left: 16,
-                right: 16,
-                top: 16,
-                bottom: MediaQuery.of(context).viewInsets.bottom,
-              ),
-              child: Wrap(
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Center(
-                        child: CircleAvatar(
-                          radius: 70,
-                          backgroundImage: NetworkImage(
-                            'https://example.com/profile_picture.jpg', // Replace with the URL of the profile picture
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      const TextField(
-                        decoration: InputDecoration(
-                          labelText: "Name",
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      const TextField(
-                        decoration: InputDecoration(
-                          labelText: "Phone Number",
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      const TextField(
-                        decoration: InputDecoration(
-                          labelText: "Email ID",
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      const TextField(
-                        decoration: InputDecoration(
-                          labelText: "DOB",
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Center(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            // Handle save profile changes
-                          },
-                          child: const Text(
-                            "Proceed",
-                            style: TextStyle(color: Colors.black),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFFF9B406),
-                            padding: EdgeInsets.symmetric(horizontal: 120, vertical: 18),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
-      child: Text("Edit Profile"),
     );
   }
 }
