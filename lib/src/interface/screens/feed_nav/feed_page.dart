@@ -21,19 +21,16 @@ class _FeedPageState extends State<FeedPage> {
                 Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Network Image as the background
                     ClipRRect(
                       borderRadius: BorderRadius.circular(12),
                       child: Image.network(
-                        'https://via.placeholder.com/400', // Replace with actual image URL
+                        'https://via.placeholder.com/400', 
                         height: 150,
                         width: double.infinity,
                         fit: BoxFit.cover,
                       ),
                     ),
                     SizedBox(height: 16),
-
-                    // Pop-up Content
                     Text(
                       'Get access to our unlimited resources',
                       style: TextStyle(
@@ -45,16 +42,14 @@ class _FeedPageState extends State<FeedPage> {
                     ),
                     SizedBox(height: 8),
                     Text(
-                      'Lorem ipsum dolor sit amet, consectetur     adipiscing elit.',
+                      'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.black54, // Light black color
+                        color: Colors.black54,
                       ),
                       textAlign: TextAlign.center,
                     ),
                     SizedBox(height: 16),
-
-                    // Subscribe Button
                     Align(
                       alignment: Alignment.centerLeft,
                       child: ElevatedButton(
@@ -63,8 +58,8 @@ class _FeedPageState extends State<FeedPage> {
                         },
                         child: Text('Subscribe now'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFF040F4F), // Button color
-                          foregroundColor: Colors.white, // Text color
+                          backgroundColor: Color(0xFF040F4F),
+                          foregroundColor: Colors.white,
                           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
@@ -74,13 +69,12 @@ class _FeedPageState extends State<FeedPage> {
                     ),
                   ],
                 ),
-                // Close Icon at the top right
                 Positioned(
                   right: 0,
                   top: 0,
                   child: GestureDetector(
                     onTap: () {
-                      Navigator.of(context).pop(); // Close the dialog
+                      Navigator.of(context).pop();
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -106,11 +100,10 @@ class _FeedPageState extends State<FeedPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Placeholder for the image
             Container(
               width: double.infinity,
               height: 200,
-              color: Colors.grey, // Gray rectangle placeholder
+              color: Colors.grey,
               child: Center(
                 child: Text(
                   'Event Image Placeholder',
@@ -123,7 +116,6 @@ class _FeedPageState extends State<FeedPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // News Category
                   Container(
                     padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                     decoration: BoxDecoration(
@@ -139,8 +131,6 @@ class _FeedPageState extends State<FeedPage> {
                     ),
                   ),
                   SizedBox(height: 8),
-
-                  // News Title
                   Text(
                     'Tech Mahindra employees start hashtags on social media on Manish Vyas',
                     style: TextStyle(
@@ -149,8 +139,6 @@ class _FeedPageState extends State<FeedPage> {
                     ),
                   ),
                   SizedBox(height: 8),
-
-                  // Timestamp and Read Time
                   Row(
                     children: [
                       Text(
@@ -169,8 +157,6 @@ class _FeedPageState extends State<FeedPage> {
                     ],
                   ),
                   SizedBox(height: 16),
-
-                  // News Description
                   Text(
                     'Tech Mahindra employees have sparked a wave of social media activity, '
                     'rallying behind the hashtag campaigns centered around Manish Vyas, '
@@ -183,66 +169,52 @@ class _FeedPageState extends State<FeedPage> {
                     ),
                   ),
                   SizedBox(height: 16),
-
-                  // Button to show pop-up
                   Center(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        // Left Arrow Button
                         Container(
                           padding: const EdgeInsets.all(8.0),
                           decoration: BoxDecoration(
-                            color: Color(0xFFE2E8F0), // Arrow padding color
+                            color: Color(0xFFE2E8F0),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Icon(
                             Icons.arrow_back,
-                            color: Color(0xFF004797), // Arrow color
+                            color: Color(0xFF004797),
                           ),
                         ),
-                        SizedBox(width: 8), // Add spacing between elements
-
-                        // "TAP TO READ" Text
-                        Container(
-                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 32.0),
-                          decoration: BoxDecoration(
-                            color: Color(0xFFF2F2F2), // Background color
-                            borderRadius: BorderRadius.circular(15),
+                        SizedBox(width: 8),
+                        ElevatedButton(
+                          onPressed: () {
+                            _showPopup(context);
+                          },
+                          child: Text(
+                            'TAP TO READ',
+                            style: TextStyle(
+                              color: Color(0xFF828282),
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
-                          child: ElevatedButton(
-                            onPressed: () {
-                              _showPopup(context); // Show the pop-up on press
-                            },
-                            child: Text(
-                              'TAP TO READ',
-                              style: TextStyle(
-                                color: Color(0xFF828282), // Text color
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                              ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color(0xFFF2F2F2),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
                             ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFFF2F2F2), // Button background color
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 32.0),
-                            ),
+                            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 32.0),
                           ),
                         ),
-                        SizedBox(width: 8), // Add spacing between elements
-
-                        // Right Arrow Button
+                        SizedBox(width: 8),
                         Container(
                           padding: const EdgeInsets.all(8.0),
                           decoration: BoxDecoration(
-                            color: Color(0xFFE2E8F0), // Arrow padding color
+                            color: Color(0xFFE2E8F0),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Icon(
                             Icons.arrow_forward,
-                            color: Color(0xFF004797), // Arrow color
+                            color: Color(0xFF004797),
                           ),
                         ),
                       ],

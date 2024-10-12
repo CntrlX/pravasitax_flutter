@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:pravasitax_flutter/src/interface/screens/menu_pages/my_filings.dart';
+import 'package:pravasitax_flutter/src/interface/screens/menu_pages/about.dart';
+import 'package:pravasitax_flutter/src/interface/screens/menu_pages/privacy_policy.dart';
+import 'package:pravasitax_flutter/src/interface/screens/menu_pages/termsandconditions.dart';
 
 class ProfilePage extends StatelessWidget {
   @override
@@ -87,9 +91,32 @@ class ProfilePage extends StatelessWidget {
             // Menu List Items
             _buildListTile(context, Icons.help_outline, 'Help Center'),
             Container(color: Color(0xFFD9D9D9), height: 1),
-            _buildListTile(context, Icons.file_copy_outlined, 'My Filings'),
+             _buildListTile(
+              context,
+              Icons.rule,
+              'My Filings',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => MyFilingsPage()),
+                );
+              },
+            ),
             Container(color: Color(0xFFD9D9D9), height: 1),
-            _buildListTile(context, Icons.info_outline, 'About Us'),
+            
+              _buildListTile(
+              context,
+              Icons.rule,
+              'About Us',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => AboutPage()),
+                );
+              },
+            ),
             Container(color: Color(0xFFD9D9D9), height: 1),
             _buildListTile(context, Icons.file_present_outlined, 'Documents'),
             Container(color: Color(0xFFD9D9D9), height: 1),
@@ -97,11 +124,35 @@ class ProfilePage extends StatelessWidget {
             Container(color: Color(0xFFD9D9D9), height: 1),
             _buildListTile(context, Icons.post_add_outlined, 'My Posts'),
             Container(color: Color(0xFFD9D9D9), height: 1),
-            _buildListTile(context, Icons.privacy_tip_outlined, 'Privacy Policy'),
+            _buildListTile(
+              context,
+              Icons.rule,
+              'Privacy Policy',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => PrivacyPolicyPage()),
+                );
+              },
+            ),
+
+      
             Container(color: Color(0xFFD9D9D9), height: 1),
             _buildListTile(context, Icons.save_alt_outlined, 'Saved News'),
             Container(color: Color(0xFFD9D9D9), height: 1),
-            _buildListTile(context, Icons.rule_outlined, 'Terms & Condition'),
+             _buildListTile(
+              context,
+              Icons.rule,
+              'Terms and Conditions',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => TermsAndConditionsPage()),
+                );
+              },
+            ),
             Container(color: Color(0xFFD9D9D9), height: 1),
             _buildListTile(context, Icons.rule_outlined, 'Notification Settings'),
             Container(color: Color(0xFFF2F2F2), height: 15),
@@ -109,12 +160,12 @@ class ProfilePage extends StatelessWidget {
               // Handle Logout
               _showLogoutDialog(context);
             }),
-             Container(color: Color(0xFFF2F2F2), height: 15),
+            Container(color: Color(0xFFF2F2F2), height: 15),
             _buildListTile(context, Icons.delete_forever, 'Delete Account', onTap: () {
               // Handle Delete Account
               _showDeleteAccountDialog(context);
             }),
-             Container(color: Color(0xFFF2F2F2), height: 100),
+            Container(color: Color(0xFFF2F2F2), height: 100),
 
             const SizedBox(height: 20),
           ],
@@ -248,30 +299,29 @@ class EditProfilePage extends StatelessWidget {
                 border: OutlineInputBorder(),
               ),
             ),
-             const SizedBox(height: 16),
-             const TextField(
+            const SizedBox(height: 16),
+            const TextField(
               decoration: InputDecoration(
                 labelText: "Email ID",
                 border: OutlineInputBorder(),
               ),
             ),
-             const SizedBox(height: 16),
-             const TextField(
+            const SizedBox(height: 16),
+            const TextField(
               decoration: InputDecoration(
                 labelText: "DOB",
                 border: OutlineInputBorder(),
               ),
             ),
-             const SizedBox(height: 16),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
                 // Handle save profile changes
               },
-                child: const Text(
+              child: const Text(
                 "Proceed",
                 style: TextStyle(color: Colors.black),
-                ),
+              ),
             ),
           ],
         ),
