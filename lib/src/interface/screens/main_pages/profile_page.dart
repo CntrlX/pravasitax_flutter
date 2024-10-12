@@ -265,67 +265,96 @@ class ProfilePage extends StatelessWidget {
 }
 
 // Edit Profile Page
+
+
 class EditProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Edit Profile"),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: CircleAvatar(
-                radius: 70,
-                backgroundImage: NetworkImage(
-                  'https://example.com/profile_picture.jpg', // Replace with the URL of the profile picture
-                ),
+    return ElevatedButton(
+      onPressed: () {
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+          ),
+          builder: (BuildContext context) {
+            return Padding(
+              padding: EdgeInsets.only(
+                left: 16,
+                right: 16,
+                top: 16,
+                bottom: MediaQuery.of(context).viewInsets.bottom,
               ),
-            ),
-            const SizedBox(height: 16),
-            const TextField(
-              decoration: InputDecoration(
-                labelText: "Name",
-                border: OutlineInputBorder(),
+              child: Wrap(
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Center(
+                        child: CircleAvatar(
+                          radius: 70,
+                          backgroundImage: NetworkImage(
+                            'https://example.com/profile_picture.jpg', // Replace with the URL of the profile picture
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      const TextField(
+                        decoration: InputDecoration(
+                          labelText: "Name",
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      const TextField(
+                        decoration: InputDecoration(
+                          labelText: "Phone Number",
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      const TextField(
+                        decoration: InputDecoration(
+                          labelText: "Email ID",
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      const TextField(
+                        decoration: InputDecoration(
+                          labelText: "DOB",
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Center(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            // Handle save profile changes
+                          },
+                          child: const Text(
+                            "Proceed",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color(0xFFF9B406),
+                            padding: EdgeInsets.symmetric(horizontal: 120, vertical: 18),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(height: 16),
-            const TextField(
-              decoration: InputDecoration(
-                labelText: "Phone Number",
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 16),
-            const TextField(
-              decoration: InputDecoration(
-                labelText: "Email ID",
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 16),
-            const TextField(
-              decoration: InputDecoration(
-                labelText: "DOB",
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                // Handle save profile changes
-              },
-              child: const Text(
-                "Proceed",
-                style: TextStyle(color: Colors.black),
-              ),
-            ),
-          ],
-        ),
-      ),
+            );
+          },
+        );
+      },
+      child: Text("Edit Profile"),
     );
   }
 }
