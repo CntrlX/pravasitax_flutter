@@ -231,20 +231,7 @@ class _FeedPageState extends State<FeedPage> {
             ),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => DebugPage()),
-          );
-        },
-        backgroundColor: Color(0xFF004797),
-        child: Icon(
-          Icons.help_outline,
-          color: Colors.white,
-        ),
-      ),
+      )
     );
   }
 }

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class ForumPageWithPlaceholders extends StatefulWidget {
+class ForumConsultantPage extends StatefulWidget {
   @override
   _ForumPageWithPlaceholdersState createState() =>
       _ForumPageWithPlaceholdersState();
 }
 
-class _ForumPageWithPlaceholdersState extends State<ForumPageWithPlaceholders> {
+class _ForumPageWithPlaceholdersState extends State<ForumConsultantPage> {
   List<Map<String, String>> feeds = [
     {
       "title": "Consultant A",

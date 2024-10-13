@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pravasitax_flutter/src/interface/screens/chat_nav/chat_page.dart';
 import 'package:pravasitax_flutter/src/interface/screens/home_cards.dart/tax_filing_adv.dart';
+import 'package:pravasitax_flutter/src/interface/screens/home_cards.dart/tax_tools.dart'; // Import the tax tools page
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -41,7 +42,7 @@ class HomePage extends StatelessWidget {
                   _buildServiceCard(
                     title: 'Tax Filing and Advisory',
                     iconPath: 'assets/icons/tax_filing.svg',
-                    color: Color(0xFFDCDCDC),
+                    color: const Color(0xFFDCDCDC),
                     textColor: const Color(0xFF003366),
                     onTap: () {
                       Navigator.push(
@@ -117,72 +118,80 @@ class HomePage extends StatelessWidget {
                 height: 120,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
+                  children: [
                     Column(
                       children: [
-                      _buildToolCard(
-                        context: context,
-                        icon: Icons.refresh,
-                        title: '',
-                        color: const Color(0xFFFFF3F3),
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'Tax refund calculator',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 10, color: Colors.black87),
-                      ),
+                        _buildToolCard(
+                          context: context,
+                          icon: Icons.refresh,
+                          title: '',
+                          color: const Color(0xFFFFF3F3),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => TaxToolsPage(), // Open tax_tools.dart page
+                              ),
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 8),
+                        const Text(
+                          'Tax refund calculator',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 10, color: Colors.black87),
+                        ),
                       ],
                     ),
                     Column(
                       children: [
-                      _buildToolCard(
-                        context: context,
-                        icon: Icons.attach_money,
-                        title: '',
-                        color: const Color(0xFFFFF3E6),
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'Income Tax Calculator',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 10, color: Colors.black87),
-                      ),
+                        _buildToolCard(
+                          context: context,
+                          icon: Icons.attach_money,
+                          title: '',
+                          color: const Color(0xFFFFF3E6),
+                        ),
+                        const SizedBox(height: 8),
+                        const Text(
+                          'Income Tax Calculator',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 10, color: Colors.black87),
+                        ),
                       ],
                     ),
                     Column(
                       children: [
-                      _buildToolCard(
-                        context: context,
-                        icon: Icons.person,
-                        title: '',
-                        color: const Color(0xFFF2FFEE),
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'NRI Status Calculator',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 10, color: Colors.black87),
-                      ),
+                        _buildToolCard(
+                          context: context,
+                          icon: Icons.person,
+                          title: '',
+                          color: const Color(0xFFF2FFEE),
+                        ),
+                        const SizedBox(height: 8),
+                        const Text(
+                          'NRI Status Calculator',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 10, color: Colors.black87),
+                        ),
                       ],
                     ),
                     Column(
                       children: [
-                      _buildToolCard(
-                        context: context,
-                        icon: Icons.receipt,
-                        title: '',
-                        color: const Color(0xFFE6F3FF),
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'Rent Receipt Generator',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 10, color: Colors.black87),
-                      ),
+                        _buildToolCard(
+                          context: context,
+                          icon: Icons.receipt,
+                          title: '',
+                          color: const Color(0xFFE6F3FF),
+                        ),
+                        const SizedBox(height: 8),
+                        const Text(
+                          'Rent Receipt Generator',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 10, color: Colors.black87),
+                        ),
                       ],
                     ),
-                    ],
+                  ],
                 ),
               ),
               const SizedBox(height: 24),
@@ -347,32 +356,36 @@ class HomePage extends StatelessWidget {
     required IconData icon,
     required String title,
     required Color color,
+    VoidCallback? onTap,
   }) {
-    return Container(
-      width: 80,
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 5,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, size: 36, color: Colors.black54), // Placeholder icon
-          const SizedBox(height: 8),
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 12, color: Colors.black87),
-          ),
-        ],
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 80,
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 5,
+              offset: const Offset(0, 5),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 36, color: Colors.black54), // Placeholder icon
+            const SizedBox(height: 8),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 12, color: Colors.black87),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -488,38 +501,38 @@ class HomePage extends StatelessWidget {
       ),
     );
   }
-      Widget _buildCommonDifficultiesBanner() {
-        return Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.amber.shade100,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: const Text(
-            'Common Difficulties in filing taxes',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-        );
-      }
 
-      // Help Section Widget
-      Widget _buildHelpSection() {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Difficulties in filing taxes?',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            const Text('Lorem ipsum dolor sit amet consectetur.'),
-            const SizedBox(height: 8),
-            ElevatedButton(
-              onPressed: () {},
-              child: const Text('Contact Us'),
-            ),
-          ],
-        );
-      }
-    }
+  Widget _buildCommonDifficultiesBanner() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.amber.shade100,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: const Text(
+        'Common Difficulties in filing taxes',
+        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      ),
+    );
+  }
 
+  // Help Section Widget
+  Widget _buildHelpSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Difficulties in filing taxes?',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 8),
+        const Text('Lorem ipsum dolor sit amet consectetur.'),
+        const SizedBox(height: 8),
+        ElevatedButton(
+          onPressed: () {},
+          child: const Text('Contact Us'),
+        ),
+      ],
+    );
+  }
+}

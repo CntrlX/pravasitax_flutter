@@ -22,6 +22,9 @@ class _LoginFrontPageState extends State<LoginFrontPage> {
   final PageController _pageController = PageController();
   int _currentIndex = 0;
   final TextEditingController _phoneController = TextEditingController();
+  final List<TextEditingController> _otpControllers = List.generate(4, (_) => TextEditingController());
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -79,10 +82,7 @@ class _LoginFrontPageState extends State<LoginFrontPage> {
                           );
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.amber,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
+                          alignment: Alignment.centerLeft,
                         ),
                         child: const Text('Skip'),
                       )
@@ -91,9 +91,10 @@ class _LoginFrontPageState extends State<LoginFrontPage> {
                           _showPhoneNumberModal(context);
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.amber,
+                          backgroundColor: const Color.fromRGBO(255, 193, 7, 1),
+                          minimumSize: const Size(double.infinity, 50), // Set the button size
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(4),
                           ),
                         ),
                         child: const Text('Get OTP'),
@@ -184,22 +185,160 @@ class _LoginFrontPageState extends State<LoginFrontPage> {
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () {
-                    // TODO: Implement OTP generation and verification
                     Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('OTP sent successfully')),
-                    );
+                    _showOtpVerificationScreen(context);
                   },
-                  style: ElevatedButton.styleFrom(
+                    style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.amber,
+                    minimumSize: const Size(double.infinity, 50), // Set the button size
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(4),
                     ),
-                  ),
-                  child: const Text('Get OTP'),
+                    ),
+                    child: const Text('Get OTP'),
                 ),
               ],
             ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showOtpVerificationScreen(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
+      ),
+      builder: (BuildContext context) {
+        return Container(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Hi',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
+              const Text(
+                'Please enter your OTP',
+                style: TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: List.generate(
+                  4,
+                  (index) => SizedBox(
+                    width: 50,
+                    child: TextField(
+                      controller: _otpControllers[index],
+                      keyboardType: TextInputType.number,
+                      textAlign: TextAlign.center,
+                      maxLength: 1,
+                      decoration: const InputDecoration(
+                        counterText: '',
+                        border: OutlineInputBorder(),
+                      ),
+                      onChanged: (value) {
+                        if (value.length == 1 && index < 3) {
+                          FocusScope.of(context).nextFocus();
+                        }
+                      },
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  _showUserInfoScreen(context);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.amber,
+                  minimumSize: const Size(double.infinity, 50),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                ),
+                child: const Text('Verify'),
+              ),
+              const SizedBox(height: 10),
+              TextButton(
+                onPressed: () {
+                  // TODO: Implement resend OTP functionality
+                },
+                child: const Text('Resend OTP'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showUserInfoScreen(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
+      ),
+      builder: (BuildContext context) {
+        return Container(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Hi',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
+              const Text(
+                'Please enter your Name',
+                style: TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 20),
+              TextField(
+                controller: _nameController,
+                decoration: const InputDecoration(
+                  hintText: 'Enter your Name',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 20),
+              TextField(
+                controller: _emailController,
+                decoration: const InputDecoration(
+                  hintText: 'Enter your Email ID',
+                  border: OutlineInputBorder(),
+                ),
+                keyboardType: TextInputType.emailAddress,
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  // TODO: Implement user information submission
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('User information submitted successfully')),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.amber,
+                  minimumSize: const Size(double.infinity, 50),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+                child: const Text('Proceed'),
+              ),
+            ],
           ),
         );
       },
