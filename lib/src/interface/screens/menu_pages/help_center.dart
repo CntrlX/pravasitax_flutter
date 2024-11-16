@@ -5,7 +5,8 @@ class HelpCenterPage extends StatefulWidget {
   _HelpCenterPageState createState() => _HelpCenterPageState();
 }
 
-class _HelpCenterPageState extends State<HelpCenterPage> with SingleTickerProviderStateMixin {
+class _HelpCenterPageState extends State<HelpCenterPage>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   List<bool> _isExpanded = List.generate(6, (_) => false);
 
@@ -51,7 +52,8 @@ class _HelpCenterPageState extends State<HelpCenterPage> with SingleTickerProvid
                   labelColor: Colors.black,
                   unselectedLabelColor: Colors.black,
                   labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                  unselectedLabelStyle: TextStyle(fontWeight: FontWeight.normal),
+                  unselectedLabelStyle:
+                      TextStyle(fontWeight: FontWeight.normal),
                   indicator: BoxDecoration(
                     color: Color(0xFFD3EDCA),
                     border: Border.all(color: Color(0x660A601D)),
@@ -66,10 +68,10 @@ class _HelpCenterPageState extends State<HelpCenterPage> with SingleTickerProvid
                     ],
                   ),
                   tabs: [
-                    Tab(text: 'ITR Filing'),
-                    Tab(text: 'General'),
-                    Tab(text: 'Land Tax'),
-                    Tab(text: 'Terms & conditio'),
+                    Tab(text: '  ITR Filing  '),
+                    Tab(text: '  General  '),
+                    Tab(text: '  Land Tax  '),
+                    Tab(text: '  Terms & condition  '),
                   ],
                 ),
               ),
@@ -79,7 +81,8 @@ class _HelpCenterPageState extends State<HelpCenterPage> with SingleTickerProvid
                 itemCount: 6,
                 itemBuilder: (context, index) {
                   return Theme(
-                    data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+                    data: Theme.of(context)
+                        .copyWith(dividerColor: Colors.transparent),
                     child: ExpansionTile(
                       title: Text(
                         'Lorem ipsum dolor sit amet consectetur. Nibh faucibus.',
@@ -87,11 +90,13 @@ class _HelpCenterPageState extends State<HelpCenterPage> with SingleTickerProvid
                       ),
                       children: [
                         Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Lorem ipsum dolor sit amet consectetur. Urna arcu pretium sed volutpat a amet ac egestas.'),
+                              Text(
+                                  'Lorem ipsum dolor sit amet consectetur. Urna arcu pretium sed volutpat a amet ac egestas.'),
                               SizedBox(height: 8),
                               ElevatedButton(
                                 child: Text(
@@ -130,7 +135,8 @@ class _HelpCenterPageState extends State<HelpCenterPage> with SingleTickerProvid
                         children: [
                           Text(
                             'Need any assistance?',
-                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 19),
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 19),
                           ),
                           Text('Contact our representative'),
                           SizedBox(height: 8),

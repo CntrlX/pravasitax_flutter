@@ -4,9 +4,6 @@ class ChatPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Chat'),
-      ),
       body: Column(
         children: [
           Divider(
@@ -201,7 +198,8 @@ class ChatScreen extends StatelessWidget {
                 Align(
                   alignment: Alignment.centerRight,
                   child: Container(
-                    width: MediaQuery.of(context).size.width * 0.7, // Limit to 70% of the screen width
+                    width: MediaQuery.of(context).size.width *
+                        0.7, // Limit to 70% of the screen width
                     decoration: BoxDecoration(
                       color: Color(0xFFFDE79F),
                       borderRadius: BorderRadius.only(
@@ -285,30 +283,34 @@ class ChatScreen extends StatelessWidget {
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
-                      border: Border.all(color: Color(0xFFA9A9A9)), // Black border outline
-                      borderRadius: BorderRadius.circular(4), // Slightly rounded edges
+                      border: Border.all(
+                          color: Color(0xFFA9A9A9)), // Black border outline
+                      borderRadius:
+                          BorderRadius.circular(4), // Slightly rounded edges
                     ),
                     child: Row(
                       children: [
                         // Expanded TextField inside the box
                         Expanded(
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
                             child: TextField(
                               style: TextStyle(
-                              color: Color(0xFFB4B4B4),
+                                color: Color(0xFFB4B4B4),
                               ),
                               decoration: InputDecoration(
-                              hintText: 'Type your message here',
-                              border: InputBorder.none,
+                                hintText: 'Type your message here',
+                                border: InputBorder.none,
                               ),
                             ),
-                            ),
                           ),
-            
+                        ),
+
                         // Attach file icon inside the box
                         IconButton(
-                          icon: Icon(Icons.attach_file, color: Color(0xFFB4B4B4)),
+                          icon:
+                              Icon(Icons.attach_file, color: Color(0xFFB4B4B4)),
                           onPressed: () {
                             // Handle attach action
                           },
@@ -322,8 +324,10 @@ class ChatScreen extends StatelessWidget {
                 // Send button with yellow background
                 Container(
                   decoration: BoxDecoration(
-                    color: Color(0xFFFDBA2F), // Yellow background for send button
-                    borderRadius: BorderRadius.circular(4), // Matching rounded edges
+                    color:
+                        Color(0xFFFDBA2F), // Yellow background for send button
+                    borderRadius:
+                        BorderRadius.circular(4), // Matching rounded edges
                   ),
                   child: IconButton(
                     icon: Icon(Icons.send, color: Colors.white),
