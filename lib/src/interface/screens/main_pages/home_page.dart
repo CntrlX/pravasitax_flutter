@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pravasitax_flutter/src/interface/screens/chat_nav/chat_page.dart';
-import 'package:pravasitax_flutter/src/interface/screens/home_cards.dart/tax_filing_adv.dart';
-import 'package:pravasitax_flutter/src/interface/screens/home_cards.dart/tax_tools.dart'; // Import the tax tools page
+import 'package:pravasitax_flutter/src/interface/screens/home_cards/tax_filing_adv.dart';
+import 'package:pravasitax_flutter/src/interface/screens/home_cards/tax_tools.dart'; // Import the tax tools page
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -17,7 +17,7 @@ class HomePage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Logo and Profile Avatar
-              
+
               // Search Bar
               TextField(
                 decoration: InputDecoration(
@@ -101,8 +101,10 @@ class HomePage extends StatelessWidget {
                   scrollDirection: Axis.horizontal,
                   children: [
                     _buildPropertyCard(context, 'Lower Deduction Certificate'),
-                    _buildPropertyCard(context, 'Assistance in Property Purchase'),
-                    _buildPropertyCard(context, 'Trying to Buy or Sell Land/Property?'),
+                    _buildPropertyCard(
+                        context, 'Assistance in Property Purchase'),
+                    _buildPropertyCard(
+                        context, 'Trying to Buy or Sell Land/Property?'),
                   ],
                 ),
               ),
@@ -130,7 +132,8 @@ class HomePage extends StatelessWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => TaxToolsPage(), // Open tax_tools.dart page
+                                builder: (context) =>
+                                    TaxToolsPage(), // Open tax_tools.dart page
                               ),
                             );
                           },
@@ -300,7 +303,8 @@ class HomePage extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                style:
+                    const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 4),
               Text(
@@ -433,7 +437,8 @@ class HomePage extends StatelessWidget {
                 top: 12,
                 left: 12,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: isLive ? Colors.red : Colors.green,
                     borderRadius: BorderRadius.circular(8),

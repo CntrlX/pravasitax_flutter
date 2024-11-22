@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pravasitax_flutter/mainPage_consultant.dart';
 import 'package:pravasitax_flutter/src/interface/screens/main_pages/home_consultant.dart'; // Import the target page
-import 'package:pravasitax_flutter/src/interface/screens/login_page.dart/login_front.dart'; // Import the login page
+import 'package:pravasitax_flutter/src/interface/screens/login_pages/login_front.dart'; // Import the login page
 import 'package:pravasitax_flutter/src/interface/screens/forum_nav/forum_consultant.dart'; // Import the forum consultant page
 import 'package:pravasitax_flutter/src/interface/screens/main_pages/profile_consultant.dart'; // Import the profile consultant page
 import 'package:pravasitax_flutter/src/interface/screens/community_consultant/community_screen.dart'; // Import the community screen
@@ -55,13 +55,13 @@ class DebugPage extends StatelessWidget {
 
     // Define icons for the tiles
     List<IconData> tileIcons = [
-      Icons.coffee,        // Replace with the actual icons you're using
+      Icons.coffee, // Replace with the actual icons you're using
       Icons.wallet_travel, // Replace with the actual icons you're using
-      Icons.receipt,       // Replace with the actual icons you're using
-      Icons.search,        // Replace with the actual icons you're using
-      Icons.dashboard,     // Replace with the actual icons you're using
-      Icons.person,        // Replace with the actual icons you're using
-      Icons.call,          // Replace with the actual icons you're using
+      Icons.receipt, // Replace with the actual icons you're using
+      Icons.search, // Replace with the actual icons you're using
+      Icons.dashboard, // Replace with the actual icons you're using
+      Icons.person, // Replace with the actual icons you're using
+      Icons.call, // Replace with the actual icons you're using
     ];
 
     return GestureDetector(
@@ -71,27 +71,32 @@ class DebugPage extends StatelessWidget {
             context,
             MaterialPageRoute(builder: (context) => HomeConsultantPage()),
           );
-        } else if (index == 1) { // Assuming the wallet icon is at index 1
+        } else if (index == 1) {
+          // Assuming the wallet icon is at index 1
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => CommunityScreenPage()),
           );
-        } else if (index == 3) { // Assuming the search icon is at index 3
+        } else if (index == 3) {
+          // Assuming the search icon is at index 3
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => ForumConsultantPage()),
           );
-        } else if (index == 4) { // Assuming the dashboard icon is at index 4
+        } else if (index == 4) {
+          // Assuming the dashboard icon is at index 4
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => ProfileConsultantPage()),
           );
-        } else if (index == 5) { // Assuming the person icon is at index 5
+        } else if (index == 5) {
+          // Assuming the person icon is at index 5
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => LoginFrontPage()),
           );
-        } else if (index == 6) { // Assuming the call icon is at index 6
+        } else if (index == 6) {
+          // Assuming the call icon is at index 6
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => MainPageConsultantPage()),

@@ -1,20 +1,37 @@
 import 'package:flutter/material.dart';
-import 'package:pravasitax_flutter/mainpage.dart'; // Import MainPage
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pravasitax_flutter/src/core/theme/app_theme.dart';
+import 'package:pravasitax_flutter/src/interface/screens/login_pages/splash_screen.dart';
+import 'package:pravasitax_flutter/mainpage.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(
+    const ProviderScope(
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false, // Remove the debug banner
+      debugShowCheckedModeBanner: false,
       title: 'Pravasi Tax',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primaryColor: AppPalette.kPrimaryColor,
+        // colorScheme: ColorScheme.fromSwatch().copyWith(
+        //   primary: AppPalette.kPrimaryColor,
+        //   secondary: AppPalette.kSecondaryColor,
+        // ),
       ),
-      home: MainPage(), // Set MainPage as the home screen
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const SplashScreen(),
+        '/home': (context) => MainPage(),
+      },
     );
   }
 }
