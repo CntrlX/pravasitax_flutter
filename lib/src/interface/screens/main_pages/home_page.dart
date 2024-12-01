@@ -2,13 +2,90 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pravasitax_flutter/src/interface/screens/chat_nav/chat_page.dart';
 import 'package:pravasitax_flutter/src/interface/screens/home_cards/tax_filing_adv.dart';
-import 'package:pravasitax_flutter/src/interface/screens/home_cards/tax_tools.dart'; // Import the tax tools page
+import 'package:pravasitax_flutter/src/interface/screens/home_cards/tax_tools.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../data/providers/home_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'dart:developer' as developer;
 
-class HomePage extends StatelessWidget {
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
   @override
+  ConsumerState<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends ConsumerState<HomePage> {
+  @override
+  void initState() {
+    super.initState();
+    developer.log('Initializing HomePage', name: 'HomePage');
+    Future.microtask(() {
+      developer.log('Fetching home page data', name: 'HomePage');
+      ref.read(homeProvider.notifier).fetchHomePageData();
+    });
+  }
+
+  Future<void> _launchUrl(String url) async {
+    try {
+      developer.log('Attempting to launch URL: $url', name: 'HomePage');
+      final uri = Uri.parse(url);
+      if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+        throw Exception('Could not launch $url');
+      }
+    } catch (e) {
+      developer.log('Error launching URL: $url', error: e, name: 'HomePage');
+      // Show error snackbar
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not open link: $e')),
+        );
+      }
+    }
+  }
+
+  String _getIconPathForService(String serviceName) {
+    // Map service names to icon paths
+    final Map<String, String> iconMap = {
+      'Tax Filing': 'assets/icons/tax_filing.svg',
+      'Wealth Planning': 'assets/icons/wealth.svg',
+      'Property Related Services': 'assets/icons/property.svg',
+      'PAN Related Services': 'assets/icons/pan.svg',
+      // Add more mappings as needed
+    };
+    
+    return iconMap[serviceName] ?? 'assets/icons/tax_filing.svg'; // Default icon
+  }
+
+  @override
   Widget build(BuildContext context) {
+    developer.log('Building HomePage', name: 'HomePage');
+    final homeState = ref.watch(homeProvider);
+
+    if (homeState.isLoading) {
+      developer.log('HomePage is in loading state', name: 'HomePage');
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (homeState.error != null) {
+      developer.log('HomePage encountered error: ${homeState.error}', name: 'HomePage');
+      return Scaffold(
+        body: Center(child: Text('Error: ${homeState.error}')),
+      );
+    }
+
+    final data = homeState.data;
+    if (data == null) {
+      developer.log('HomePage has no data', name: 'HomePage');
+      return const Scaffold(
+        body: Center(child: Text('No data available')),
+      );
+    }
+
+    developer.log('HomePage data loaded successfully', name: 'HomePage');
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
@@ -16,9 +93,6 @@ class HomePage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Logo and Profile Avatar
-
-              // Search Bar
               TextField(
                 decoration: InputDecoration(
                   hintText: 'Search for any services',
@@ -35,82 +109,64 @@ class HomePage extends StatelessWidget {
               ),
               const SizedBox(height: 24),
 
-              // Service Cards (2x2 grid)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _buildServiceCard(
-                    title: 'Tax Filing and Advisory',
-                    iconPath: 'assets/icons/tax_filing.svg',
+              // Service Cards
+              GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 16,
+                  childAspectRatio: 1.5,
+                ),
+                itemCount: data.serviceList.length.clamp(0, 4),
+                itemBuilder: (context, index) {
+                  final service = data.serviceList[index];
+                  return _buildServiceCard(
+                    title: service.service,
+                    iconPath: _getIconPathForService(service.service),
                     color: const Color(0xFFDCDCDC),
                     textColor: const Color(0xFF003366),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => TaxFilingAdvPage(),
-                        ),
-                      );
-                    },
-                  ),
-                  _buildServiceCard(
-                    title: 'Wealth Planning',
-                    iconPath: 'assets/icons/wealth.svg',
-                    color: const Color(0xFFDCDCDC),
-                    textColor: const Color(0xFF003366),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _buildServiceCard(
-                    title: 'Property Related Services',
-                    iconPath: 'assets/icons/property.svg',
-                    color: const Color(0xFFDCDCDC),
-                    textColor: const Color(0xFF003366),
-                  ),
-                  _buildServiceCard(
-                    title: 'PAN Related Services',
-                    iconPath: 'assets/icons/pan.svg',
-                    color: const Color(0xFFDCDCDC),
-                    textColor: const Color(0xFF003366),
-                  ),
-                ],
+                    onTap: service.url != null ? () => _launchUrl(service.url!) : null,
+                  );
+                },
               ),
               const SizedBox(height: 24),
 
-              // Property Services Banner
-              _buildBanner(
-                title: 'Assistance in Filing Form 15CA/15CB',
-                description: 'Annual Information Statement',
-                bgColor: const Color(0xFFFFF9E6),
-              ),
+              // First Section Banners
+              if (data.firstSectionBanners.isNotEmpty)
+                _buildBanner(
+                  title: data.firstSectionBanners[0].title,
+                  description: data.firstSectionBanners[0].label,
+                  bgColor: const Color(0xFFFFF9E6),
+                  imageUrl: data.firstSectionBanners[0].image,
+                  onTap: data.firstSectionBanners[0].url != null ? () => _launchUrl(data.firstSectionBanners[0].url!) : null,
+                ),
               const SizedBox(height: 24),
 
-              // Property Related Services Section
+              // Scenarios Section
               const Text(
-                'Property Related Services',
+                'Common Scenarios',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
               SizedBox(
                 height: 180,
-                child: ListView(
+                child: ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  children: [
-                    _buildPropertyCard(context, 'Lower Deduction Certificate'),
-                    _buildPropertyCard(
-                        context, 'Assistance in Property Purchase'),
-                    _buildPropertyCard(
-                        context, 'Trying to Buy or Sell Land/Property?'),
-                  ],
+                  itemCount: data.scenarios.length,
+                  itemBuilder: (context, index) {
+                    final scenario = data.scenarios[index];
+                    return _buildPropertyCard(
+                      context,
+                      scenario.scenario,
+                      scenario.url != null ? () => _launchUrl(scenario.url!) : null,
+                    
+                    );
+                  },
                 ),
               ),
               const SizedBox(height: 24),
-
-              // Tools Section
               const Text(
                 'Tools',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -118,100 +174,75 @@ class HomePage extends StatelessWidget {
               const SizedBox(height: 16),
               SizedBox(
                 height: 120,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Column(
-                      children: [
-                        _buildToolCard(
-                          context: context,
-                          icon: Icons.refresh,
-                          title: '',
-                          color: const Color(0xFFFFF3F3),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    TaxToolsPage(), // Open tax_tools.dart page
-                              ),
-                            );
-                          },
-                        ),
-                        const SizedBox(height: 8),
-                        const Text(
-                          'Tax refund calculator',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 10, color: Colors.black87),
-                        ),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        _buildToolCard(
-                          context: context,
-                          icon: Icons.attach_money,
-                          title: '',
-                          color: const Color(0xFFFFF3E6),
-                        ),
-                        const SizedBox(height: 8),
-                        const Text(
-                          'Income Tax Calculator',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 10, color: Colors.black87),
-                        ),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        _buildToolCard(
-                          context: context,
-                          icon: Icons.person,
-                          title: '',
-                          color: const Color(0xFFF2FFEE),
-                        ),
-                        const SizedBox(height: 8),
-                        const Text(
-                          'NRI Status Calculator',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 10, color: Colors.black87),
-                        ),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        _buildToolCard(
-                          context: context,
-                          icon: Icons.receipt,
-                          title: '',
-                          color: const Color(0xFFE6F3FF),
-                        ),
-                        const SizedBox(height: 8),
-                        const Text(
-                          'Rent Receipt Generator',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 10, color: Colors.black87),
-                        ),
-                      ],
-                    ),
-                  ],
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: data.taxTools.length,
+                  itemBuilder: (context, index) {
+                    final tool = data.taxTools[index];
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 16),
+                      child: Column(
+                        children: [
+                          _buildToolCard(
+                            context: context,
+                            icon: Icons.calculate,
+                            title: '',
+                            color: const Color(0xFFFFF3F3),
+                            onTap: tool.url != null ? () => _launchUrl(tool.url!) : null,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            tool.title,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(fontSize: 10, color: Colors.black87),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
                 ),
               ),
               const SizedBox(height: 24),
 
               // Event Section
-              _buildEventCard(
-                context: context,
-                isLive: false,
-                tag: 'Recorded',
-                date: '02 Jan 2023',
-                time: '09:00 PM',
-                title: 'Empowering NRIs with Knowledge',
-                description:
-                    'Lorem ipsum dolor sit amet consectetur. Eget velit sagittis sapien in vitae ut.',
-                imagePath: 'assets/images/event_placeholder.png', // Placeholder
-              ),
+              if (data.event != null)
+                _buildEventCard(
+                  context: context,
+                  isLive: data.event?.type?.toLowerCase() == 'live',
+                  tag: data.event?.type ?? '',
+                  date: data.event?.date ?? '',
+                  time: data.event?.time ?? '',
+                  title: data.event?.title ?? '',
+                  description: data.event?.location ?? '',
+                  imageUrl: data.event?.banner ?? '', // Changed to use network image
+                  price: data.event?.price ?? '',
+                ),
               const SizedBox(height: 24),
+
+              // Blogs Section
+              const Text(
+                'Latest Blogs',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 16),
+              ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: data.blogs.length.clamp(0, 3),
+                itemBuilder: (context, index) {
+                  final blog = data.blogs[index];
+                  return Card(
+                    child: ListTile(
+                      leading: blog.thumbnail != null 
+                          ? Image.network(blog.thumbnail!)
+                          : const Icon(Icons.image),
+                      title: Text(blog.title),
+                      subtitle: Text(blog.shortDescription ?? ''),
+                      onTap: blog.url != null ? () => _launchUrl(blog.url!) : null,
+                    ),
+                  );
+                },
+              ),
             ],
           ),
         ),
@@ -282,49 +313,75 @@ class HomePage extends StatelessWidget {
     required String title,
     required String description,
     required Color bgColor,
+    required String imageUrl,
+    VoidCallback? onTap,
   }) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 5,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style:
-                    const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 5,
+              offset: const Offset(0, 5),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    description,
+                    style: const TextStyle(fontSize: 14, color: Colors.grey),
+                  ),
+                ],
               ),
-              const SizedBox(height: 4),
-              Text(
-                description,
-                style: const TextStyle(fontSize: 14, color: Colors.grey),
+            ),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.network(
+                imageUrl,
+                width: 80,
+                height: 80,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  developer.log(
+                    'Error loading banner image: $error',
+                    error: error,
+                    stackTrace: stackTrace,
+                    name: 'HomePage',
+                  );
+                  return Container(
+                    width: 80,
+                    height: 80,
+                    color: Colors.grey[300],
+                    child: const Icon(Icons.error),
+                  );
+                },
               ),
-            ],
-          ),
-          const Spacer(),
-          Container(
-            width: 80,
-            height: 80,
-            color: Colors.grey[300], // Grey box
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildPropertyCard(BuildContext context, String title) {
+  Widget _buildPropertyCard(BuildContext context, String title, VoidCallback? onTap) {
     return Container(
       width: 160,
       margin: const EdgeInsets.only(right: 16),
@@ -402,7 +459,8 @@ class HomePage extends StatelessWidget {
     required String time,
     required String title,
     required String description,
-    required String imagePath,
+    required String imageUrl,
+    required String price,
   }) {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -420,25 +478,38 @@ class HomePage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Event banner with image and tag
           Stack(
             children: [
-              Container(
-                height: 150,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  image: DecorationImage(
-                    image: AssetImage(imagePath),
-                    fit: BoxFit.cover,
-                  ),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.network(
+                  imageUrl,
+                  height: 150,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    developer.log(
+                      'Error loading event image: $error',
+                      error: error,
+                      stackTrace: stackTrace,
+                      name: 'HomePage',
+                    );
+                    return Container(
+                      height: 150,
+                      color: Colors.grey[300],
+                      child: const Icon(Icons.error),
+                    );
+                  },
                 ),
               ),
               Positioned(
                 top: 12,
                 left: 12,
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: isLive ? Colors.red : Colors.green,
                     borderRadius: BorderRadius.circular(8),
@@ -452,7 +523,6 @@ class HomePage extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-
           // Date and time row
           Row(
             children: [
