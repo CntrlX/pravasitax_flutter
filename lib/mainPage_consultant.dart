@@ -6,7 +6,7 @@ import 'package:pravasitax_flutter/src/interface/screens/feed_nav/feed_page.dart
 import 'package:pravasitax_flutter/src/interface/screens/forum_nav/forum_page.dart';
 import 'package:pravasitax_flutter/src/interface/screens/i_hub_nav/hub_page.dart';
 import 'package:pravasitax_flutter/src/interface/screens/main_pages/home_page.dart';
-import 'package:pravasitax_flutter/src/interface/screens/main_pages/notification.dart'; 
+import 'package:pravasitax_flutter/src/interface/screens/main_pages/notification.dart';
 import 'package:pravasitax_flutter/src/interface/screens/main_pages/profile_page.dart'; // Import ProfilePage
 
 class MainPageConsultantPage extends StatefulWidget {
@@ -19,11 +19,11 @@ class _MainPageState extends State<MainPage> {
 
   // List of pages to display for each tab
   final List<Widget> _widgetOptions = <Widget>[
-    HomePage(),  // Home Page
-    FeedPage(),  // Feed Page
-    HubPage(),  // I-Hub Page
-    ForumPage(),  // Forum Page
-    ChatPage(),  // Chat Page
+    HomePage(), // Home Page
+    FeedPage(), // Feed Page
+    HubPage(), // I-Hub Page
+    ForumPage(), // Forum Page
+    ChatPage(), // Chat Page
   ];
 
   // Method to update the selected index when an item is tapped
@@ -50,7 +50,7 @@ class _MainPageState extends State<MainPage> {
           children: [
             Image.asset(
               'assets/pravasi_logo.png', // Pravasi Tax logo
-              height: 40,  // Adjusted size
+              height: 40, // Adjusted size
               width: 90,
             ),
             SizedBox(width: 8),
@@ -58,7 +58,8 @@ class _MainPageState extends State<MainPage> {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.notifications_active_outlined), // Notification icon
+            icon:
+                Icon(Icons.notifications_active_outlined), // Notification icon
             onPressed: () {
               // Navigate to NotificationPage when pressed
               Navigator.push(
@@ -87,7 +88,7 @@ class _MainPageState extends State<MainPage> {
           ),
         ],
       ),
-      
+
       // The body will dynamically change based on the selected index
       body: _widgetOptions[_selectedIndex],
 
@@ -112,24 +113,24 @@ class _MainPageState extends State<MainPage> {
           ),
           BottomNavigationBarItem(
             icon: _buildNavBarIcon(
-              'assets/icons/chklist_active.svg',  
-              'assets/icons/chklist_inactive.svg', 
+              'assets/icons/chklist_active.svg',
+              'assets/icons/chklist_inactive.svg',
               2,
             ),
             label: 'I-Hub',
           ),
           BottomNavigationBarItem(
             icon: _buildNavBarIcon(
-              'assets/icons/chat_active_consultant.svg', 
-              'assets/icons/chat_inactive_consultant.svg', 
+              'assets/icons/chat_active_consultant.svg',
+              'assets/icons/chat_inactive_consultant.svg',
               3,
             ),
             label: 'Forum',
           ),
           BottomNavigationBarItem(
             icon: _buildNavBarIcon(
-              'assets/icons/people_active.svg', 
-              'assets/icons/people_inactive.svg', 
+              'assets/icons/people_active.svg',
+              'assets/icons/people_inactive.svg',
               4,
             ),
             label: 'Chat',
@@ -138,7 +139,7 @@ class _MainPageState extends State<MainPage> {
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.blue,
         unselectedItemColor: Colors.grey,
-        onTap: _onItemTapped,  
+        onTap: _onItemTapped,
       ),
     );
   }

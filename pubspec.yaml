@@ -42,6 +42,9 @@ dependencies:
   json_annotation: ^4.8.1
   url_launcher: ^6.2.5
   cached_network_image: ^3.3.1
+  webview_flutter: ^4.7.0
+  webview_flutter_android: ^3.15.0
+  webview_flutter_wkwebview: ^3.12.0
 
 
 

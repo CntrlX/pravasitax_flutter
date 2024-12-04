@@ -199,7 +199,7 @@ class _LoginFrontPageState extends ConsumerState<LoginFrontPage> {
       if (mounted) {
         developer.log('OTP sent successfully, showing verification dialog',
             name: 'LoginFrontPage._handleGetOTP');
-        _showOtpVerificationDialog(email);
+        _showOtpVerificationSheet(email);
       }
     } catch (e) {
       developer.log('Error sending OTP',
@@ -218,51 +218,125 @@ class _LoginFrontPageState extends ConsumerState<LoginFrontPage> {
     }
   }
 
-  void _showOtpVerificationDialog(String email) {
-    showDialog(
+  void _showOtpVerificationSheet(String email) {
+    showModalBottomSheet(
       context: context,
-      barrierDismissible: false,
-      builder: (BuildContext dialogContext) => AlertDialog(
-        title: const Text('Enter OTP'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('Please enter the OTP sent to your email'),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: List.generate(
-                6,
-                (index) => OTPTextField(
-                  controller: _otpControllers[index],
-                  focusNode: _otpFocusNodes[index],
-                  onChanged: (value) {
-                    if (value.isNotEmpty && index < 5) {
-                      _otpFocusNodes[index + 1].requestFocus();
-                    }
-                  },
-                  onBackspace: () {
-                    if (index > 0) {
-                      _otpControllers[index - 1].clear();
-                      _otpFocusNodes[index - 1].requestFocus();
-                    }
-                  },
-                ),
-              ),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return Container(
+          height: MediaQuery.of(context).size.height * 0.5,
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(25.0),
+              topRight: Radius.circular(25.0),
             ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('Cancel'),
           ),
-          TextButton(
-            onPressed: () => _verifyOTP(email),
-            child: const Text('Verify'),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 10),
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 30),
+                const Text(
+                  'OTP Verification',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  'Enter the verification code we sent to\n$email',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey[600],
+                  ),
+                ),
+                const SizedBox(height: 40),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: List.generate(
+                    6,
+                    (index) => SizedBox(
+                      width: 45,
+                      height: 55,
+                      child: OTPTextField(
+                        controller: _otpControllers[index],
+                        focusNode: _otpFocusNodes[index],
+                        onChanged: (value) {
+                          if (value.isNotEmpty && index < 5) {
+                            _otpFocusNodes[index + 1].requestFocus();
+                          }
+                        },
+                        onBackspace: () {
+                          if (index > 0) {
+                            _otpControllers[index - 1].clear();
+                            _otpFocusNodes[index - 1].requestFocus();
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 40),
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: () => _verifyOTP(email),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppPalette.kPrimaryColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: const Text(
+                      'Verify OTP',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Didn't receive the code? ",
+                      style: TextStyle(color: Colors.grey[600]),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        _handleGetOTP();
+                      },
+                      child: const Text(
+                        'Resend',
+                        style: TextStyle(
+                          color: AppPalette.kPrimaryColor,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -335,7 +409,7 @@ class _LoginFrontPageState extends ConsumerState<LoginFrontPage> {
       if (mounted) {
         Navigator.of(context).pop(); // Pop loading dialog
       }
-      
+
       developer.log('Error verifying OTP',
           error: e.toString(), name: 'LoginFrontPage._verifyOTP');
       if (mounted) {
@@ -381,39 +455,57 @@ class OTPTextField extends StatefulWidget {
 class _OTPTextFieldState extends State<OTPTextField> {
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 40,
-      child: RawKeyboardListener(
-        focusNode: FocusNode(),
-        onKey: (RawKeyEvent event) {
-          if (event is RawKeyDownEvent) {
-            if (event.logicalKey == LogicalKeyboardKey.backspace) {
-              if (widget.controller.text.isEmpty) {
-                widget.onBackspace();
-              }
-            }
-          }
-        },
-        child: TextField(
-          controller: widget.controller,
-          focusNode: widget.focusNode,
-          textAlign: TextAlign.center,
-          keyboardType: TextInputType.number,
-          maxLength: 1,
-          decoration: const InputDecoration(
-            counterText: '',
-            border: OutlineInputBorder(),
-          ),
-          onChanged: (value) {
-            if (value.isNotEmpty) {
-              widget.onChanged(value);
-            } else {
-              // Handle backspace when text is cleared
+    return RawKeyboardListener(
+      focusNode: FocusNode(),
+      onKey: (RawKeyEvent event) {
+        if (event is RawKeyDownEvent) {
+          if (event.logicalKey == LogicalKeyboardKey.backspace) {
+            if (widget.controller.text.isEmpty) {
               widget.onBackspace();
             }
-          },
-          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          }
+        }
+      },
+      child: TextField(
+        controller: widget.controller,
+        focusNode: widget.focusNode,
+        textAlign: TextAlign.center,
+        keyboardType: TextInputType.number,
+        maxLength: 1,
+        style: const TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+          height: 1,
         ),
+        decoration: InputDecoration(
+          counterText: '',
+          isDense: true,
+          contentPadding: const EdgeInsets.symmetric(
+            vertical: 12,
+            horizontal: 0,
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(color: Colors.grey[300]!),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide:
+                const BorderSide(color: AppPalette.kPrimaryColor, width: 2),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(color: Colors.grey[300]!),
+          ),
+          fillColor: Colors.grey[100],
+          filled: true,
+        ),
+        onChanged: (value) {
+          if (value.isNotEmpty) {
+            widget.onChanged(value);
+          }
+        },
+        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       ),
     );
   }

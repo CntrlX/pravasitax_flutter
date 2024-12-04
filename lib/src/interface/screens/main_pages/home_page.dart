@@ -7,6 +7,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../data/providers/home_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:developer' as developer;
+import 'package:pravasitax_flutter/src/interface/screens/common/webview_screen.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -26,22 +28,16 @@ class _HomePageState extends ConsumerState<HomePage> {
     });
   }
 
-  Future<void> _launchUrl(String url) async {
-    try {
-      developer.log('Attempting to launch URL: $url', name: 'HomePage');
-      final uri = Uri.parse(url);
-      if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-        throw Exception('Could not launch $url');
-      }
-    } catch (e) {
-      developer.log('Error launching URL: $url', error: e, name: 'HomePage');
-      // Show error snackbar
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not open link: $e')),
-        );
-      }
-    }
+  void _launchUrl(String url) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => WebViewScreen(
+          url: url,
+          title: '', // You can customize this title
+        ),
+      ),
+    );
   }
 
   String _getIconPathForService(String serviceName) {
@@ -53,8 +49,9 @@ class _HomePageState extends ConsumerState<HomePage> {
       'PAN Related Services': 'assets/icons/pan.svg',
       // Add more mappings as needed
     };
-    
-    return iconMap[serviceName] ?? 'assets/icons/tax_filing.svg'; // Default icon
+
+    return iconMap[serviceName] ??
+        'assets/icons/tax_filing.svg'; // Default icon
   }
 
   @override
@@ -70,7 +67,8 @@ class _HomePageState extends ConsumerState<HomePage> {
     }
 
     if (homeState.error != null) {
-      developer.log('HomePage encountered error: ${homeState.error}', name: 'HomePage');
+      developer.log('HomePage encountered error: ${homeState.error}',
+          name: 'HomePage');
       return Scaffold(
         body: Center(child: Text('Error: ${homeState.error}')),
       );
@@ -127,7 +125,9 @@ class _HomePageState extends ConsumerState<HomePage> {
                     iconPath: _getIconPathForService(service.service),
                     color: const Color(0xFFDCDCDC),
                     textColor: const Color(0xFF003366),
-                    onTap: service.url != null ? () => _launchUrl(service.url!) : null,
+                    onTap: service.url != null
+                        ? () => _launchUrl(service.url!)
+                        : null,
                   );
                 },
               ),
@@ -140,7 +140,9 @@ class _HomePageState extends ConsumerState<HomePage> {
                   description: data.firstSectionBanners[0].label,
                   bgColor: const Color(0xFFFFF9E6),
                   imageUrl: data.firstSectionBanners[0].image,
-                  onTap: data.firstSectionBanners[0].url != null ? () => _launchUrl(data.firstSectionBanners[0].url!) : null,
+                  onTap: data.firstSectionBanners[0].url != null
+                      ? () => _launchUrl(data.firstSectionBanners[0].url!)
+                      : null,
                 ),
               const SizedBox(height: 24),
 
@@ -160,8 +162,9 @@ class _HomePageState extends ConsumerState<HomePage> {
                     return _buildPropertyCard(
                       context,
                       scenario.scenario,
-                      scenario.url != null ? () => _launchUrl(scenario.url!) : null,
-                    
+                      scenario.url != null
+                          ? () => _launchUrl(scenario.url!)
+                          : null,
                     );
                   },
                 ),
@@ -188,13 +191,16 @@ class _HomePageState extends ConsumerState<HomePage> {
                             icon: Icons.calculate,
                             title: '',
                             color: const Color(0xFFFFF3F3),
-                            onTap: tool.url != null ? () => _launchUrl(tool.url!) : null,
+                            onTap: tool.url != null
+                                ? () => _launchUrl(tool.url!)
+                                : null,
                           ),
                           const SizedBox(height: 8),
                           Text(
                             tool.title,
                             textAlign: TextAlign.center,
-                            style: const TextStyle(fontSize: 10, color: Colors.black87),
+                            style: const TextStyle(
+                                fontSize: 10, color: Colors.black87),
                           ),
                         ],
                       ),
@@ -214,7 +220,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                   time: data.event?.time ?? '',
                   title: data.event?.title ?? '',
                   description: data.event?.location ?? '',
-                  imageUrl: data.event?.banner ?? '', // Changed to use network image
+                  imageUrl:
+                      data.event?.banner ?? '', // Changed to use network image
                   price: data.event?.price ?? '',
                 ),
               const SizedBox(height: 24),
@@ -233,12 +240,57 @@ class _HomePageState extends ConsumerState<HomePage> {
                   final blog = data.blogs[index];
                   return Card(
                     child: ListTile(
-                      leading: blog.thumbnail != null 
-                          ? Image.network(blog.thumbnail!)
-                          : const Icon(Icons.image),
+                      leading: blog.thumbnail != null
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(4),
+                              child: CachedNetworkImage(
+                                imageUrl: blog.thumbnail!,
+                                width: 60,
+                                height: 60,
+                                fit: BoxFit.cover,
+                                placeholder: (context, url) => Container(
+                                  width: 60,
+                                  height: 60,
+                                  color: Colors.grey[200],
+                                  child: const Center(
+                                    child: SizedBox(
+                                      width: 15,
+                                      height: 15,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                                Colors.grey),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                errorWidget: (context, url, error) => Container(
+                                  width: 60,
+                                  height: 60,
+                                  color: Colors.grey[200],
+                                  child: const Icon(
+                                    Icons.image,
+                                    color: Colors.grey,
+                                    size: 20,
+                                  ),
+                                ),
+                              ),
+                            )
+                          : Container(
+                              width: 60,
+                              height: 60,
+                              color: Colors.grey[200],
+                              child: const Icon(
+                                Icons.image,
+                                color: Colors.grey,
+                                size: 20,
+                              ),
+                            ),
                       title: Text(blog.title),
                       subtitle: Text(blog.shortDescription ?? ''),
-                      onTap: blog.url != null ? () => _launchUrl(blog.url!) : null,
+                      onTap:
+                          blog.url != null ? () => _launchUrl(blog.url!) : null,
                     ),
                   );
                 },
@@ -292,6 +344,16 @@ class _HomePageState extends ConsumerState<HomePage> {
               iconPath,
               width: 36,
               height: 36,
+              placeholderBuilder: (context) => SizedBox(
+                width: 36,
+                height: 36,
+                child: Center(
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(textColor),
+                  ),
+                ),
+              ),
             ),
             const SizedBox(height: 8),
             Text(
@@ -354,25 +416,50 @@ class _HomePageState extends ConsumerState<HomePage> {
             ),
             ClipRRect(
               borderRadius: BorderRadius.circular(8),
-              child: Image.network(
-                imageUrl,
+              child: CachedNetworkImage(
+                imageUrl: imageUrl,
                 width: 80,
                 height: 80,
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  developer.log(
-                    'Error loading banner image: $error',
-                    error: error,
-                    stackTrace: stackTrace,
-                    name: 'HomePage',
-                  );
+                placeholder: (context, url) => Container(
+                  width: 80,
+                  height: 80,
+                  color: Colors.grey[200],
+                  child: const Center(
+                    child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.grey),
+                      ),
+                    ),
+                  ),
+                ),
+                errorWidget: (context, url, error) {
+                  developer.log('Error loading image: $error',
+                      name: 'HomePage');
                   return Container(
                     width: 80,
                     height: 80,
-                    color: Colors.grey[300],
-                    child: const Icon(Icons.error),
+                    color: Colors.grey[200],
+                    child: const Icon(
+                      Icons.error_outline,
+                      color: Colors.grey,
+                      size: 24,
+                    ),
                   );
                 },
+                imageBuilder: (context, imageProvider) => Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: imageProvider,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
               ),
             ),
           ],
@@ -381,7 +468,8 @@ class _HomePageState extends ConsumerState<HomePage> {
     );
   }
 
-  Widget _buildPropertyCard(BuildContext context, String title, VoidCallback? onTap) {
+  Widget _buildPropertyCard(
+      BuildContext context, String title, VoidCallback? onTap) {
     return Container(
       width: 160,
       margin: const EdgeInsets.only(right: 16),
@@ -482,24 +570,23 @@ class _HomePageState extends ConsumerState<HomePage> {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-                child: Image.network(
-                  imageUrl,
+                child: CachedNetworkImage(
+                  imageUrl: imageUrl,
                   height: 150,
                   width: double.infinity,
                   fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    developer.log(
-                      'Error loading event image: $error',
-                      error: error,
-                      stackTrace: stackTrace,
-                      name: 'HomePage',
-                    );
-                    return Container(
-                      height: 150,
-                      color: Colors.grey[300],
-                      child: const Icon(Icons.error),
-                    );
-                  },
+                  placeholder: (context, url) => Container(
+                    height: 150,
+                    color: Colors.grey[300],
+                    child: const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  ),
+                  errorWidget: (context, url, error) => Container(
+                    height: 150,
+                    color: Colors.grey[300],
+                    child: const Icon(Icons.error),
+                  ),
                 ),
               ),
               Positioned(
