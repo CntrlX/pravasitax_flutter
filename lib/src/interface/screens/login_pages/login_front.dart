@@ -224,115 +224,123 @@ class _LoginFrontPageState extends ConsumerState<LoginFrontPage> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
-        return Container(
-          height: MediaQuery.of(context).size.height * 0.5,
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(25.0),
-              topRight: Radius.circular(25.0),
-            ),
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 10),
-                Center(
-                  child: Container(
-                    width: 40,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
+          child: SingleChildScrollView(
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(25.0),
+                  topRight: Radius.circular(25.0),
                 ),
-                const SizedBox(height: 30),
-                const Text(
-                  'OTP Verification',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  'Enter the verification code we sent to\n$email',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[600],
-                  ),
-                ),
-                const SizedBox(height: 40),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: List.generate(
-                    6,
-                    (index) => SizedBox(
-                      width: 45,
-                      height: 55,
-                      child: OTPTextField(
-                        controller: _otpControllers[index],
-                        focusNode: _otpFocusNodes[index],
-                        onChanged: (value) {
-                          if (value.isNotEmpty && index < 5) {
-                            _otpFocusNodes[index + 1].requestFocus();
-                          }
-                        },
-                        onBackspace: () {
-                          if (index > 0) {
-                            _otpControllers[index - 1].clear();
-                            _otpFocusNodes[index - 1].requestFocus();
-                          }
-                        },
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 40),
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: () => _verifyOTP(email),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppPalette.kPrimaryColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: const Text(
-                      'Verify OTP',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      "Didn't receive the code? ",
-                      style: TextStyle(color: Colors.grey[600]),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        _handleGetOTP();
-                      },
-                      child: const Text(
-                        'Resend',
-                        style: TextStyle(
-                          color: AppPalette.kPrimaryColor,
-                          fontWeight: FontWeight.bold,
+                    const SizedBox(height: 10),
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(2),
                         ),
                       ),
                     ),
+                    const SizedBox(height: 30),
+                    const Text(
+                      'OTP Verification',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      'Enter the verification code we sent to\n$email',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                    const SizedBox(height: 40),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: List.generate(
+                        6,
+                        (index) => SizedBox(
+                          width: 45,
+                          height: 55,
+                          child: OTPTextField(
+                            controller: _otpControllers[index],
+                            focusNode: _otpFocusNodes[index],
+                            onChanged: (value) {
+                              if (value.isNotEmpty && index < 5) {
+                                _otpFocusNodes[index + 1].requestFocus();
+                              }
+                            },
+                            onBackspace: () {
+                              if (index > 0) {
+                                _otpControllers[index - 1].clear();
+                                _otpFocusNodes[index - 1].requestFocus();
+                              }
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 40),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: () => _verifyOTP(email),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppPalette.kPrimaryColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: const Text(
+                          'Verify OTP',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Didn't receive the code? ",
+                          style: TextStyle(color: Colors.grey[600]),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                            _handleGetOTP();
+                          },
+                          child: const Text(
+                            'Resend',
+                            style: TextStyle(
+                              color: AppPalette.kPrimaryColor,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
                   ],
                 ),
-              ],
+              ),
             ),
           ),
         );

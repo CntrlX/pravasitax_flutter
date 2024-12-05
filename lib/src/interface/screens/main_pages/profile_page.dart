@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:pravasitax_flutter/src/data/providers/auth_provider.dart';
 import 'package:pravasitax_flutter/src/interface/screens/menu_pages/documents.dart';
 import 'package:pravasitax_flutter/src/interface/screens/menu_pages/help_center.dart';
 import 'package:pravasitax_flutter/src/interface/screens/menu_pages/my_filings.dart';
@@ -10,6 +11,7 @@ import 'package:pravasitax_flutter/src/interface/screens/menu_pages/saved_news.d
 import 'package:pravasitax_flutter/src/interface/screens/menu_pages/subscriptions.dart';
 import 'package:pravasitax_flutter/src/interface/screens/menu_pages/termsandconditions.dart';
 import 'package:pravasitax_flutter/src/interface/screens/menu_pages/notification_setting.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ProfilePage extends StatelessWidget {
   @override
@@ -81,7 +83,8 @@ class ProfilePage extends StatelessWidget {
                         context: context,
                         isScrollControlled: true,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                          borderRadius:
+                              BorderRadius.vertical(top: Radius.circular(16)),
                         ),
                         builder: (BuildContext context) {
                           return Padding(
@@ -91,82 +94,85 @@ class ProfilePage extends StatelessWidget {
                               top: 16,
                               bottom: MediaQuery.of(context).viewInsets.bottom,
                             ),
-                           child: Wrap(
-  children: [
-    Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Close Icon at the top-right corner
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            IconButton(
-              icon: const Icon(Icons.close, color: Colors.black),
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the bottom sheet
-              },
-            ),
-          ],
-        ),
-        Center(
-          child: CircleAvatar(
-            radius: 70,
-            backgroundImage: NetworkImage(
-              'https://example.com/profile_picture.jpg',
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
-        const TextField(
-          decoration: InputDecoration(
-            labelText: "Name",
-            border: OutlineInputBorder(),
-          ),
-        ),
-        const SizedBox(height: 16),
-        const TextField(
-          decoration: InputDecoration(
-            labelText: "Phone Number",
-            border: OutlineInputBorder(),
-          ),
-        ),
-        const SizedBox(height: 16),
-        const TextField(
-          decoration: InputDecoration(
-            labelText: "Email ID",
-            border: OutlineInputBorder(),
-          ),
-        ),
-        const SizedBox(height: 16),
-        const TextField(
-          decoration: InputDecoration(
-            labelText: "DOB",
-            border: OutlineInputBorder(),
-          ),
-        ),
-        const SizedBox(height: 16),
-        Center(
-          child: ElevatedButton(
-            onPressed: () {},
-            child: const Text(
-              "Proceed",
-              style: TextStyle(color: Colors.black),
-            ),
-            
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFF9B406),
-              padding: const EdgeInsets.symmetric(horizontal: 185, vertical: 18),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-          ),
-        ),
-      ],
-    ),
-  ],
-),
-
+                            child: Wrap(
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    // Close Icon at the top-right corner
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        IconButton(
+                                          icon: const Icon(Icons.close,
+                                              color: Colors.black),
+                                          onPressed: () {
+                                            Navigator.of(context)
+                                                .pop(); // Close the bottom sheet
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                    Center(
+                                      child: CircleAvatar(
+                                        radius: 70,
+                                        backgroundImage: NetworkImage(
+                                          'https://example.com/profile_picture.jpg',
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    const TextField(
+                                      decoration: InputDecoration(
+                                        labelText: "Name",
+                                        border: OutlineInputBorder(),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    const TextField(
+                                      decoration: InputDecoration(
+                                        labelText: "Phone Number",
+                                        border: OutlineInputBorder(),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    const TextField(
+                                      decoration: InputDecoration(
+                                        labelText: "Email ID",
+                                        border: OutlineInputBorder(),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    const TextField(
+                                      decoration: InputDecoration(
+                                        labelText: "DOB",
+                                        border: OutlineInputBorder(),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Center(
+                                      child: ElevatedButton(
+                                        onPressed: () {},
+                                        child: const Text(
+                                          "Proceed",
+                                          style: TextStyle(color: Colors.black),
+                                        ),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor:
+                                              const Color(0xFFF9B406),
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 185, vertical: 18),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           );
                         },
                       );
@@ -181,7 +187,10 @@ class ProfilePage extends StatelessWidget {
             ),
             _buildSectionHeader('ACCOUNT'),
 
-            _buildListTile(context, Icons.help_outline, 'Help Center',
+            _buildListTile(
+              context,
+              Icons.help_outline,
+              'Help Center',
               onTap: () {
                 Navigator.push(
                   context,
@@ -214,8 +223,11 @@ class ProfilePage extends StatelessWidget {
               },
             ),
             Container(color: Color(0xFFD9D9D9), height: 1),
-            _buildListTile(context, Icons.file_present_outlined, 'Documents',
-               onTap: () {
+            _buildListTile(
+              context,
+              Icons.file_present_outlined,
+              'Documents',
+              onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => DocumentsPage()),
@@ -223,7 +235,10 @@ class ProfilePage extends StatelessWidget {
               },
             ),
             Container(color: Color(0xFFD9D9D9), height: 1),
-            _buildListTile(context, Icons.subscriptions_outlined, 'Subscriptions',
+            _buildListTile(
+              context,
+              Icons.subscriptions_outlined,
+              'Subscriptions',
               onTap: () {
                 Navigator.push(
                   context,
@@ -232,7 +247,10 @@ class ProfilePage extends StatelessWidget {
               },
             ),
             Container(color: Color(0xFFD9D9D9), height: 1),
-            _buildListTile(context, Icons.post_add_outlined, 'My Posts',
+            _buildListTile(
+              context,
+              Icons.post_add_outlined,
+              'My Posts',
               onTap: () {
                 Navigator.push(
                   context,
@@ -253,11 +271,14 @@ class ProfilePage extends StatelessWidget {
               },
             ),
             Container(color: Color(0xFFD9D9D9), height: 1),
-            _buildListTile(context, Icons.save_alt_outlined, 'Saved News',
-             onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => SavedNewsPage()),
-                ),
+            _buildListTile(
+              context,
+              Icons.save_alt_outlined,
+              'Saved News',
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SavedNewsPage()),
+              ),
             ),
             Container(color: Color(0xFFD9D9D9), height: 1),
             _buildListTile(
@@ -267,7 +288,8 @@ class ProfilePage extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => TermsAndConditionsPage()),
+                  MaterialPageRoute(
+                      builder: (context) => TermsAndConditionsPage()),
                 );
               },
             ),
@@ -279,7 +301,8 @@ class ProfilePage extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => NotificationSettingsPage()),
+                  MaterialPageRoute(
+                      builder: (context) => NotificationSettingsPage()),
                 );
               },
             ),
@@ -288,7 +311,8 @@ class ProfilePage extends StatelessWidget {
               _showLogoutDialog(context);
             }),
             Container(color: Color(0xFFF2F2F2), height: 15),
-            _buildListTile(context, Icons.delete_forever, 'Delete Account', onTap: () {
+            _buildListTile(context, Icons.delete_forever, 'Delete Account',
+                onTap: () {
               _showDeleteAccountDialog(context);
             }),
             Container(color: Color(0xFFF2F2F2), height: 100),
@@ -347,11 +371,21 @@ class ProfilePage extends StatelessWidget {
               },
               child: const Text("Cancel"),
             ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
+            Consumer(
+              builder: (context, ref, child) {
+                return TextButton(
+                  onPressed: () async {
+                    await ref.read(authProvider.notifier).logout();
+                    if (context.mounted) {
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                        '/',
+                        (route) => false,
+                      );
+                    }
+                  },
+                  child: const Text("Logout"),
+                );
               },
-              child: const Text("Logout"),
             ),
           ],
         );
@@ -365,7 +399,8 @@ class ProfilePage extends StatelessWidget {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text("Delete Account"),
-          content: const Text("Are you sure you want to delete your account? This action is irreversible."),
+          content: const Text(
+              "Are you sure you want to delete your account? This action is irreversible."),
           actions: [
             TextButton(
               onPressed: () {

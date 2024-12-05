@@ -4,6 +4,7 @@ import 'package:pravasitax_flutter/mainpage.dart';
 import 'package:pravasitax_flutter/src/core/theme/app_theme.dart';
 import '../../../data/providers/auth_provider.dart';
 import 'login_front.dart';
+import '../../../data/services/secure_storage_service.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -37,8 +38,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     await Future.delayed(const Duration(seconds: 3));
     if (!mounted) return;
 
-    final authState = ref.read(authProvider);
-    if (authState.isAuthenticated) {
+    final isLoggedIn = await SecureStorageService.isLoggedIn();
+
+    if (isLoggedIn) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => MainPage()),
