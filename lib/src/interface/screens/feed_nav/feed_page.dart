@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pravasitax_flutter/src/data/models/article_model.dart';
 import 'package:pravasitax_flutter/src/data/providers/articles_provider.dart';
 import 'package:pravasitax_flutter/src/interface/screens/i_hub_nav/article_detail_page.dart';
-import 'dart:developer';
 
 class FeedPage extends ConsumerStatefulWidget {
   @override

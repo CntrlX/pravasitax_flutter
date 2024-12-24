@@ -149,4 +149,26 @@ class ForumPost {
       'replies': replies.map((reply) => reply.toJson()).toList(),
     };
   }
+
+  ForumPost copyWith({
+    String? id,
+    String? threadId,
+    String? content,
+    String? userId,
+    String? parentPostId,
+    int? replyCount,
+    DateTime? createdAt,
+    List<ForumPost>? replies,
+  }) {
+    return ForumPost(
+      id: id ?? this.id,
+      threadId: threadId ?? this.threadId,
+      content: content ?? this.content,
+      userId: userId ?? this.userId,
+      parentPostId: parentPostId ?? this.parentPostId,
+      replyCount: replyCount ?? this.replyCount,
+      createdAt: createdAt ?? this.createdAt,
+      replies: replies ?? this.replies,
+    );
+  }
 }
