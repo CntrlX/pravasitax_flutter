@@ -3,7 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pravasitax_flutter/mainpage.dart';
 import 'package:pravasitax_flutter/src/interface/screens/chat_nav/chat_page.dart';
 import 'package:pravasitax_flutter/src/interface/screens/feed_nav/feed_page.dart';
-import 'package:pravasitax_flutter/src/interface/screens/forum_nav/forum_page.dart';
+import 'package:pravasitax_flutter/src/interface/screens/forum_nav/forum_user/forum_page.dart';
 import 'package:pravasitax_flutter/src/interface/screens/i_hub_nav/hub_page.dart';
 import 'package:pravasitax_flutter/src/interface/screens/main_pages/home_page.dart';
 import 'package:pravasitax_flutter/src/interface/screens/main_pages/notification.dart';

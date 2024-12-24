@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pravasitax_flutter/src/interface/screens/chat_nav/chat_page.dart';
 import 'package:pravasitax_flutter/src/interface/screens/feed_nav/feed_page.dart';
-import 'package:pravasitax_flutter/src/interface/screens/forum_nav/forum_page.dart';
+import 'package:pravasitax_flutter/src/interface/screens/forum_nav/forum_user/forum_list.dart';
+import 'package:pravasitax_flutter/src/interface/screens/forum_nav/forum_user/forum_page.dart';
 import 'package:pravasitax_flutter/src/interface/screens/i_hub_nav/hub_page.dart';
 import 'package:pravasitax_flutter/src/interface/screens/main_pages/home_page.dart';
-import 'package:pravasitax_flutter/src/interface/screens/main_pages/notification.dart'; 
+import 'package:pravasitax_flutter/src/interface/screens/main_pages/notification.dart';
 import 'package:pravasitax_flutter/src/interface/screens/main_pages/profile_page.dart'; // Import ProfilePage
 
 class MainPage extends StatefulWidget {
@@ -18,11 +19,11 @@ class _MainPageState extends State<MainPage> {
 
   // List of pages to display for each tab
   final List<Widget> _widgetOptions = <Widget>[
-    HomePage(),  // Home PageP
-    FeedPage(),  // Feed Page 
-    HubPage(),  // I-Hub Page
-    ForumPage(),  // Forum Page
-    ChatPage(),  // Chat Page
+    HomePage(), // Home PageP
+    FeedPage(), // Feed Page
+    HubPage(), // I-Hub Page
+    ForumList(), // Forum Page
+    ChatPage(), // Chat Page
   ];
 
   // Method to update the selected index when an item is tapped
@@ -45,11 +46,12 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        scrolledUnderElevation: 0,
         title: Row(
           children: [
             Image.asset(
               'assets/pravasi_logo.png', // Pravasi Tax logo
-              height: 40,  // Adjusted size
+              height: 40, // Adjusted size
               width: 90,
             ),
             SizedBox(width: 8),
@@ -57,7 +59,8 @@ class _MainPageState extends State<MainPage> {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.notifications_active_outlined), // Notification icon
+            icon:
+                Icon(Icons.notifications_active_outlined), // Notification icon
             onPressed: () {
               // Navigate to NotificationPage when pressed
               Navigator.push(
@@ -77,16 +80,16 @@ class _MainPageState extends State<MainPage> {
             child: Padding(
               padding: const EdgeInsets.all(8.0), // Add padding
               child: CircleAvatar(
-              backgroundImage: NetworkImage(
-                'https://example.com/profile_pic.png', // Replace with actual URL for profile image
-              ),
-              radius: 20,
+                backgroundImage: NetworkImage(
+                  'https://example.com/profile_pic.png', // Replace with actual URL for profile image
+                ),
+                radius: 20,
               ),
             ),
           ),
         ],
       ),
-      
+
       // The body will dynamically change based on the selected index
       body: _widgetOptions[_selectedIndex],
 
@@ -137,7 +140,7 @@ class _MainPageState extends State<MainPage> {
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.blue,
         unselectedItemColor: Colors.grey,
-        onTap: _onItemTapped,  // Call _onItemTapped when an item is tapped
+        onTap: _onItemTapped, // Call _onItemTapped when an item is tapped
       ),
     );
   }
