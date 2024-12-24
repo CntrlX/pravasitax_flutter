@@ -1,250 +1,242 @@
 import 'package:flutter/material.dart';
-import 'package:pravasitax_flutter/src/interface/screens/debug.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pravasitax_flutter/src/data/models/article_model.dart';
+import 'package:pravasitax_flutter/src/data/providers/articles_provider.dart';
+import 'package:pravasitax_flutter/src/interface/screens/i_hub_nav/article_detail_page.dart';
+import 'dart:developer';
 
-class FeedPage extends StatefulWidget {
+class FeedPage extends ConsumerStatefulWidget {
   @override
   _FeedPageState createState() => _FeedPageState();
 }
 
-class _FeedPageState extends State<FeedPage> {
-  void _showPopup(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12.0),
-          ),
-          child: Container(
-            padding: EdgeInsets.symmetric(vertical: 24, horizontal: 16),
-            child: Stack(
-              children: [
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.network(
-                        'https://via.placeholder.com/400',
-                        height: 150,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    SizedBox(height: 16),
-                    Text(
-                      'Get access to our unlimited resources',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.black54,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: 16),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          // Add your subscription logic here
-                        },
-                        child: Text('Subscribe now'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFF040F4F),
-                          foregroundColor: Colors.white,
-                          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                Positioned(
-                  right: 0,
-                  top: 0,
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Icon(
-                        Icons.close,
-                        color: Colors.grey[800],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
+class _FeedPageState extends ConsumerState<FeedPage> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
   }
 
-  void _showHelp() {
-    // Implement help logic here (e.g., show a help dialog or navigate to a help page)
-    print("Help button pressed");
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent * 0.8) {
+      ref.read(articlesListProvider.notifier).loadMoreArticles();
+    }
+  }
+
+  String _getMonthName(int month) {
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec'
+    ];
+    return months[month - 1];
   }
 
   @override
   Widget build(BuildContext context) {
+    final articles = ref.watch(articlesListProvider);
+    final categoriesAsync = ref.watch(categoriesProvider);
+    final selectedCategory = ref.watch(selectedCategoryProvider);
+    final hasMore = ref.watch(hasMoreArticlesProvider);
+    final isLoading = articles.isEmpty || categoriesAsync is AsyncLoading;
+
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: double.infinity,
-              height: 200,
-              color: Colors.grey,
-              child: Center(
-                child: Text(
-                  'Event Image Placeholder',
-                  style: TextStyle(color: Colors.white, fontSize: 18),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          ref.read(articlesListProvider.notifier).refresh();
+        },
+        child: isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : SingleChildScrollView(
+                controller: _scrollController,
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    categoriesAsync.when(
+                      data: (categories) => SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            _buildTagButton(
+                              'All',
+                              isActive: selectedCategory == null,
+                              onTap: () {
+                                ref
+                                    .read(selectedCategoryProvider.notifier)
+                                    .state = null;
+                                ref
+                                    .read(articlesListProvider.notifier)
+                                    .refresh();
+                              },
+                            ),
+                            ...categories.map((category) => Padding(
+                                  padding: const EdgeInsets.only(left: 8),
+                                  child: _buildTagButton(
+                                    category.category,
+                                    isActive:
+                                        selectedCategory == category.category,
+                                    onTap: () {
+                                      ref
+                                          .read(
+                                              selectedCategoryProvider.notifier)
+                                          .state = category.category;
+                                      ref
+                                          .read(articlesListProvider.notifier)
+                                          .refresh();
+                                    },
+                                  ),
+                                )),
+                          ],
+                        ),
+                      ),
+                      loading: () => const SizedBox.shrink(),
+                      error: (error, stack) =>
+                          const Text('Error loading categories'),
+                    ),
+                    const SizedBox(height: 16),
+                    ...articles.map((article) => Padding(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          child: _buildArticleCard(context, article),
+                        )),
+                    if (hasMore)
+                      Container(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        alignment: Alignment.center,
+                        child: const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      ),
+                  ],
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-                    decoration: BoxDecoration(
-                      color: Colors.green[300],
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Text(
-                      'FINANCE',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    'Tech Mahindra employees start hashtags on social media on Manish Vyas',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Text(
-                        'Sep 07, 2021, 01:28 PM IST',
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                      Spacer(),
-                      Text(
-                        '2 min read',
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 16),
-                  Text(
-                    'Tech Mahindra employees have sparked a wave of social media activity, '
-                    'rallying behind the hashtag campaigns centered around Manish Vyas, '
-                    'a key executive at the company. The hashtags, which have gained significant '
-                    'traction, are aimed at expressing both support and concerns about leadership '
-                    'decisions under his tenure...',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey[800],
-                    ),
-                  ),
-                  SizedBox(height: 16),
-                  Center(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8.0),
-                          decoration: BoxDecoration(
-                            color: Color(0xFFE2E8F0),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Icon(
-                            Icons.arrow_back,
-                            color: Color(0xFF004797),
-                          ),
-                        ),
-                        SizedBox(width: 8),
-                        ElevatedButton(
-                          onPressed: () {
-                            _showPopup(context);
-                          },
-                          child: Text(
-                            'TAP TO READ',
-                            style: TextStyle(
-                              color: Color(0xFF828282),
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFFF2F2F2),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 32.0),
-                          ),
-                        ),
-                        SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.all(8.0),
-                          decoration: BoxDecoration(
-                            color: Color(0xFFE2E8F0),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Icon(
-                            Icons.arrow_forward,
-                            color: Color(0xFF004797),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+      ),
+    );
+  }
+
+  Widget _buildTagButton(String text,
+      {bool isActive = false, VoidCallback? onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 4, horizontal: 12),
+        decoration: BoxDecoration(
+          color: isActive ? Color(0x66A9F3C7) : Colors.transparent,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isActive ? Colors.transparent : Colors.grey,
+          ),
+        ),
+        child: Text(
+          text,
+          style: TextStyle(
+            color: isActive ? Color(0xFF0F7036) : Colors.grey,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildArticleCard(BuildContext context, Article article) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (article.thumbnail != null)
+          Container(
+            height: 200,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: NetworkImage(article.thumbnail!),
+                fit: BoxFit.cover,
               ),
+            ),
+          ),
+        SizedBox(height: 8),
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          color: Color(0xFF66A9F3C7),
+          child: Text(
+            article.category.toUpperCase(),
+            style: TextStyle(
+              fontSize: 10,
+              color: Color(0xFF0F7036),
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        SizedBox(height: 8),
+        Text(
+          article.title,
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        if (article.shortDescription != null) ...[
+          SizedBox(height: 4),
+          Text(
+            article.shortDescription!,
+            style: TextStyle(color: Colors.grey[600]),
+          ),
+        ],
+        SizedBox(height: 8),
+        Row(
+          children: [
+            CircleAvatar(backgroundColor: Colors.grey, radius: 15),
+            SizedBox(width: 8),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (article.author != null)
+                  Text(article.author!, style: TextStyle(color: Colors.black)),
+                if (article.postedDate != null)
+                  Text(
+                    '${article.postedDate!.day} ${_getMonthName(article.postedDate!.month)} ${article.postedDate!.year}',
+                    style: TextStyle(color: Colors.black),
+                  ),
+              ],
             ),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => DebugPage()),
-          );
-        },
-        backgroundColor: Color(0xFF004797),
-        child: Icon(
-          Icons.help_outline,
-          color: Colors.white,
-        ),
-      ),
+        SizedBox(height: 8),
+        if (article.id != null)
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color(0xFFF9B406),
+              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 24),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      ArticleDetailPage(articleId: article.id),
+                ),
+              );
+            },
+            child: Text('Read more', style: TextStyle(color: Colors.black)),
+          ),
+      ],
     );
   }
 }

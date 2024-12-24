@@ -62,24 +62,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppPalette.kPrimaryColor,
+      backgroundColor: Colors.white,
       body: Center(
         child: FadeTransition(
           opacity: _fadeAnimation,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(
-                'assets/pravasi_logo.png',
-                width: 150,
-                height: 150,
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                'Pravasi Tax',
-                style: AppTextStyle.kDisplayTitleR,
-              ),
-            ],
+          child: Image.asset(
+            'assets/pravasi_logo.png',
+            width: 150,
+            height: 150,
           ),
         ),
       ),

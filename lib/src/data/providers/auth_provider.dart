@@ -1,5 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pravasitax_flutter/src/data/api/auth_api.dart';
 import '../services/secure_storage_service.dart';
+import 'package:flutter/foundation.dart';
+import 'dart:developer' as developer;
 
 class AuthState {
   final bool isAuthenticated;
@@ -26,7 +29,9 @@ class AuthState {
 }
 
 class AuthNotifier extends StateNotifier<AuthState> {
-  AuthNotifier() : super(AuthState()) {
+  final AuthAPI _authAPI;
+
+  AuthNotifier(this._authAPI) : super(AuthState()) {
     _initializeAuthState();
   }
 
@@ -44,11 +49,14 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   Future<void> sendOTP(String email) async {
     try {
-      // TODO: Replace with your actual API call
-      await Future.delayed(Duration(seconds: 2)); // Simulating API call
-      // If the API call is successful, you might want to store the email temporarily
-      // await SecureStorageService.saveEmail(email);
+      developer.log('Initiating OTP send request',
+          name: 'AuthNotifier.sendOTP');
+      await _authAPI.sendOTP(email);
+      developer.log('OTP sent successfully', name: 'AuthNotifier.sendOTP');
+      state = state.copyWith(error: null);
     } catch (e) {
+      developer.log('Failed to send OTP',
+          error: e.toString(), name: 'AuthNotifier.sendOTP');
       state = state.copyWith(error: e.toString());
       rethrow;
     }
@@ -56,13 +64,15 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   Future<void> verifyOTP(String email, String otp) async {
     try {
-      // TODO: Replace with your actual API call
-      await Future.delayed(Duration(seconds: 2)); // Simulating API call
+      developer.log('Initiating OTP verification',
+          name: 'AuthNotifier.verifyOTP');
 
-      // Simulate successful verification
-      final token = 'dummy_token_${DateTime.now().millisecondsSinceEpoch}';
+      final response = await _authAPI.verifyOTP(email, otp);
 
-      // Save credentials securely
+      developer.log('OTP verification successful. Response: $response',
+          name: 'AuthNotifier.verifyOTP');
+
+      final token = response['token'] as String;
       await SecureStorageService.saveAuthToken(token);
 
       state = state.copyWith(
@@ -70,7 +80,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
         token: token,
         error: null,
       );
+
+      developer.log('Auth state updated successfully',
+          name: 'AuthNotifier.verifyOTP');
     } catch (e) {
+      developer.log('Failed to verify OTP',
+          error: e.toString(), name: 'AuthNotifier.verifyOTP');
       state = state.copyWith(error: e.toString());
       rethrow;
     }
@@ -83,5 +98,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
 }
 
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
-  return AuthNotifier();
+  final authAPI = ref.watch(authAPIProvider);
+  return AuthNotifier(authAPI);
 });

@@ -27,12 +27,8 @@ mixin _$HomePageData {
   Event? get event => throw _privateConstructorUsedError;
   List<Blog> get blogs => throw _privateConstructorUsedError;
 
-  /// Serializes this HomePageData to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of HomePageData
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $HomePageDataCopyWith<HomePageData> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -64,8 +60,6 @@ class _$HomePageDataCopyWithImpl<$Res, $Val extends HomePageData>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of HomePageData
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -104,8 +98,6 @@ class _$HomePageDataCopyWithImpl<$Res, $Val extends HomePageData>
     ) as $Val);
   }
 
-  /// Create a copy of HomePageData
-  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $EventCopyWith<$Res>? get event {
@@ -147,8 +139,6 @@ class __$$HomePageDataImplCopyWithImpl<$Res>
       _$HomePageDataImpl _value, $Res Function(_$HomePageDataImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of HomePageData
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -271,7 +261,7 @@ class _$HomePageDataImpl implements _HomePageData {
             const DeepCollectionEquality().equals(other._blogs, _blogs));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
       runtimeType,
@@ -282,9 +272,7 @@ class _$HomePageDataImpl implements _HomePageData {
       event,
       const DeepCollectionEquality().hash(_blogs));
 
-  /// Create a copy of HomePageData
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$HomePageDataImplCopyWith<_$HomePageDataImpl> get copyWith =>
@@ -322,11 +310,8 @@ abstract class _HomePageData implements HomePageData {
   Event? get event;
   @override
   List<Blog> get blogs;
-
-  /// Create a copy of HomePageData
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$HomePageDataImplCopyWith<_$HomePageDataImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -340,12 +325,8 @@ mixin _$Service {
   String get service => throw _privateConstructorUsedError;
   String? get url => throw _privateConstructorUsedError;
 
-  /// Serializes this Service to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of Service
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $ServiceCopyWith<Service> get copyWith => throw _privateConstructorUsedError;
 }
 
@@ -367,8 +348,6 @@ class _$ServiceCopyWithImpl<$Res, $Val extends Service>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of Service
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -406,8 +385,6 @@ class __$$ServiceImplCopyWithImpl<$Res>
       _$ServiceImpl _value, $Res Function(_$ServiceImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of Service
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -454,13 +431,11 @@ class _$ServiceImpl implements _Service {
             (identical(other.url, url) || other.url == url));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(runtimeType, service, url);
 
-  /// Create a copy of Service
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$ServiceImplCopyWith<_$ServiceImpl> get copyWith =>
@@ -484,11 +459,8 @@ abstract class _Service implements Service {
   String get service;
   @override
   String? get url;
-
-  /// Create a copy of Service
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$ServiceImplCopyWith<_$ServiceImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -502,12 +474,8 @@ mixin _$Scenario {
   String get scenario => throw _privateConstructorUsedError;
   String? get url => throw _privateConstructorUsedError;
 
-  /// Serializes this Scenario to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of Scenario
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $ScenarioCopyWith<Scenario> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -530,8 +498,6 @@ class _$ScenarioCopyWithImpl<$Res, $Val extends Scenario>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of Scenario
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -570,8 +536,6 @@ class __$$ScenarioImplCopyWithImpl<$Res>
       _$ScenarioImpl _value, $Res Function(_$ScenarioImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of Scenario
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -619,13 +583,11 @@ class _$ScenarioImpl implements _Scenario {
             (identical(other.url, url) || other.url == url));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(runtimeType, scenario, url);
 
-  /// Create a copy of Scenario
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$ScenarioImplCopyWith<_$ScenarioImpl> get copyWith =>
@@ -650,11 +612,8 @@ abstract class _Scenario implements Scenario {
   String get scenario;
   @override
   String? get url;
-
-  /// Create a copy of Scenario
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$ScenarioImplCopyWith<_$ScenarioImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -671,12 +630,8 @@ mixin _$Banner {
   String get image => throw _privateConstructorUsedError;
   String? get button => throw _privateConstructorUsedError;
 
-  /// Serializes this Banner to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of Banner
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $BannerCopyWith<Banner> get copyWith => throw _privateConstructorUsedError;
 }
 
@@ -699,8 +654,6 @@ class _$BannerCopyWithImpl<$Res, $Val extends Banner>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of Banner
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -754,8 +707,6 @@ class __$$BannerImplCopyWithImpl<$Res>
       _$BannerImpl _value, $Res Function(_$BannerImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of Banner
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -831,14 +782,12 @@ class _$BannerImpl implements _Banner {
             (identical(other.button, button) || other.button == button));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   int get hashCode =>
       Object.hash(runtimeType, title, label, url, image, button);
 
-  /// Create a copy of Banner
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$BannerImplCopyWith<_$BannerImpl> get copyWith =>
@@ -872,11 +821,8 @@ abstract class _Banner implements Banner {
   String get image;
   @override
   String? get button;
-
-  /// Create a copy of Banner
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$BannerImplCopyWith<_$BannerImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -890,12 +836,8 @@ mixin _$TaxTool {
   String get title => throw _privateConstructorUsedError;
   String? get url => throw _privateConstructorUsedError;
 
-  /// Serializes this TaxTool to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of TaxTool
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $TaxToolCopyWith<TaxTool> get copyWith => throw _privateConstructorUsedError;
 }
 
@@ -917,8 +859,6 @@ class _$TaxToolCopyWithImpl<$Res, $Val extends TaxTool>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of TaxTool
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -956,8 +896,6 @@ class __$$TaxToolImplCopyWithImpl<$Res>
       _$TaxToolImpl _value, $Res Function(_$TaxToolImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of TaxTool
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -1004,13 +942,11 @@ class _$TaxToolImpl implements _TaxTool {
             (identical(other.url, url) || other.url == url));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(runtimeType, title, url);
 
-  /// Create a copy of TaxTool
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$TaxToolImplCopyWith<_$TaxToolImpl> get copyWith =>
@@ -1034,11 +970,8 @@ abstract class _TaxTool implements TaxTool {
   String get title;
   @override
   String? get url;
-
-  /// Create a copy of TaxTool
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$TaxToolImplCopyWith<_$TaxToolImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -1057,12 +990,8 @@ mixin _$Event {
   String get location => throw _privateConstructorUsedError;
   String? get price => throw _privateConstructorUsedError;
 
-  /// Serializes this Event to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of Event
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $EventCopyWith<Event> get copyWith => throw _privateConstructorUsedError;
 }
 
@@ -1091,8 +1020,6 @@ class _$EventCopyWithImpl<$Res, $Val extends Event>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of Event
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -1162,8 +1089,6 @@ class __$$EventImplCopyWithImpl<$Res>
       _$EventImpl _value, $Res Function(_$EventImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of Event
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -1258,14 +1183,12 @@ class _$EventImpl implements _Event {
             (identical(other.price, price) || other.price == price));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
       runtimeType, title, type, banner, date, time, location, price);
 
-  /// Create a copy of Event
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$EventImplCopyWith<_$EventImpl> get copyWith =>
@@ -1305,11 +1228,8 @@ abstract class _Event implements Event {
   String get location;
   @override
   String? get price;
-
-  /// Create a copy of Event
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$EventImplCopyWith<_$EventImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -1336,12 +1256,8 @@ mixin _$Blog {
   @JsonKey(name: 'status_text')
   String? get statusText => throw _privateConstructorUsedError;
 
-  /// Serializes this Blog to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of Blog
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $BlogCopyWith<Blog> get copyWith => throw _privateConstructorUsedError;
 }
 
@@ -1374,8 +1290,6 @@ class _$BlogCopyWithImpl<$Res, $Val extends Blog>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of Blog
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -1468,8 +1382,6 @@ class __$$BlogImplCopyWithImpl<$Res>
   __$$BlogImplCopyWithImpl(_$BlogImpl _value, $Res Function(_$BlogImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of Blog
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -1618,7 +1530,7 @@ class _$BlogImpl implements _Blog {
                 other.statusText == statusText));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
       runtimeType,
@@ -1634,9 +1546,7 @@ class _$BlogImpl implements _Blog {
       subCategory,
       statusText);
 
-  /// Create a copy of Blog
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$BlogImplCopyWith<_$BlogImpl> get copyWith =>
@@ -1692,11 +1602,8 @@ abstract class _Blog implements Blog {
   @override
   @JsonKey(name: 'status_text')
   String? get statusText;
-
-  /// Create a copy of Blog
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$BlogImplCopyWith<_$BlogImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
