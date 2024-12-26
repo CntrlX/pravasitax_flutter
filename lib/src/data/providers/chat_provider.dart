@@ -4,16 +4,16 @@ import '../models/chat_model.dart';
 
 final conversationsProvider =
     FutureProvider.family<List<Conversation>, String>((ref, userToken) async {
-  final api = ref.watch(chatAPIProvider);
-  final conversations = await api.getConversations(userToken);
+  final chatAPI = ref.watch(chatAPIProvider);
+  final conversations = await chatAPI.getConversations(userToken);
   return conversations.map((json) => Conversation.fromJson(json)).toList();
 });
 
 final conversationMessagesProvider = FutureProvider.family<List<Message>,
     ({String userToken, String conversationId})>((ref, params) async {
-  final api = ref.watch(chatAPIProvider);
+  final chatAPI = ref.watch(chatAPIProvider);
   final messages =
-      await api.getMessages(params.userToken, params.conversationId);
+      await chatAPI.getMessages(params.userToken, params.conversationId);
   return messages.map((json) => Message.fromJson(json)).toList();
 });
 
@@ -32,8 +32,8 @@ final sendMessageProvider = FutureProvider.family<
       String conversationId,
       String message
     })>((ref, params) async {
-  final api = ref.watch(chatAPIProvider);
-  await api.sendMessage(
+  final chatAPI = ref.watch(chatAPIProvider);
+  await chatAPI.sendMessage(
       params.userToken, params.conversationId, params.message);
 });
 

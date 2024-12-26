@@ -55,6 +55,9 @@ class ChatAPI {
   Future<List<Map<String, dynamic>>> getConversations(String userToken) async {
     try {
       final uri = Uri.parse('$baseUrl/chat/conversations/get');
+      developer.log('User token: $userToken', name: 'ChatAPI');
+      developer.log('Request URL: $uri', name: 'ChatAPI');
+      developer.log('Headers: ${_getHeaders(userToken)}', name: 'ChatAPI');
 
       final response = await _client.get(uri, headers: _getHeaders(userToken));
 

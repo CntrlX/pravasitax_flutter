@@ -478,7 +478,7 @@ class _HomePageState extends ConsumerState<HomePage> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => ChatScreen()),
+            MaterialPageRoute(builder: (context) => ChatPage()),
           );
         },
         backgroundColor: const Color(0xFF040F4F),

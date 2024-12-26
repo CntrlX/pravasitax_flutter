@@ -1,53 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pravasitax_flutter/src/data/models/forum_model.dart';
+import 'package:pravasitax_flutter/src/data/providers/forum_provider.dart';
+import 'package:pravasitax_flutter/src/interface/widgets/loading_indicator.dart';
 
-class ForumInside extends StatefulWidget {
+class ForumInside extends ConsumerStatefulWidget {
+  final ForumThread thread;
+  final String userToken;
+
+  ForumInside({required this.thread, required this.userToken});
+
   @override
   _ForumInsideState createState() => _ForumInsideState();
 }
 
-class _ForumInsideState extends State<ForumInside> {
-  ForumPost post = ForumPost(
-    id: '1',
-    threadId: 'thread1',
-    content:
-        'Lorem ipsum dolor sit amet consectetur. Est scelerisque nunc mauris libero. Sit risus non quam posuere nulla. Tellus nulla nunc lorem consequat dictumst feugiat viverra. Vulputate morbi faucibus dictumst sit.',
-    userId: 'John Cena',
-    createdAt: DateTime.now().subtract(Duration(hours: 3)),
-    replies: [
-      ForumPost(
-        id: '2',
-        threadId: 'thread1',
-        content:
-            'Lorem ipsum dolor sit amet consectetur. Est scelerisque nunc mauris libero.',
-        userId: 'Client 1',
-        parentPostId: '1',
-        createdAt: DateTime.now().subtract(Duration(hours: 2)),
-      ),
-      ForumPost(
-        id: '3',
-        threadId: 'thread1',
-        content:
-            'Lorem ipsum dolor sit amet consectetur. Est scelerisque nunc mauris libero.',
-        userId: 'Client 2',
-        parentPostId: '1',
-        createdAt: DateTime.now().subtract(Duration(hours: 1)),
-      ),
-      ForumPost(
-        id: '4',
-        threadId: 'thread1',
-        content:
-            'Lorem ipsum dolor sit amet consectetur. Est scelerisque nunc mauris libero.',
-        userId: 'Client 3',
-        parentPostId: '1',
-        createdAt: DateTime.now().subtract(Duration(hours: 1)),
-      ),
-    ],
-  );
-
-  TextEditingController _commentController = TextEditingController();
+class _ForumInsideState extends ConsumerState<ForumInside> {
+  final TextEditingController _commentController = TextEditingController();
   String? replyingTo;
-
   bool isLiked = false;
   int likeCount = 25;
 
@@ -62,53 +31,37 @@ class _ForumInsideState extends State<ForumInside> {
     });
   }
 
-  void _addReply(String content, {String? parentPostId}) {
-    setState(() {
-      final newReply = ForumPost(
-        id: DateTime.now().toString(),
-        threadId: post.threadId,
+  void _addReply(String content, {String? parentPostId}) async {
+    try {
+      await ref.read(createPostProvider((
+        userToken: widget.userToken,
+        threadId: widget.thread.id,
         content: content,
-        userId: 'You',
-        parentPostId: parentPostId ?? post.id,
-        createdAt: DateTime.now(),
-      );
+        parentPostId: parentPostId,
+      )).future);
 
-      if (parentPostId == null) {
-        post = post.copyWith(replies: List.from(post.replies)..add(newReply));
-      } else {
-        ForumPost? parent = _findPostById(post, parentPostId);
-        if (parent != null) {
-          final List<ForumPost> updatedReplies = List.from(parent.replies)
-            ..add(newReply);
-          post = _updateReplies(post, parentPostId, updatedReplies);
-        }
+      // Refresh posts
+      ref.refresh(forumPostsProvider((
+        userToken: widget.userToken,
+        threadId: widget.thread.id,
+      )));
+
+      if (parentPostId != null) {
+        // Refresh replies if it's a reply to a post
+        ref.refresh(postRepliesProvider((
+          userToken: widget.userToken,
+          threadId: widget.thread.id,
+          parentPostId: parentPostId,
+        )));
       }
-    });
 
-    replyingTo = null;
-    _commentController.clear();
-  }
-
-  ForumPost _updateReplies(
-      ForumPost currentPost, String targetId, List<ForumPost> updatedReplies) {
-    if (currentPost.id == targetId) {
-      return currentPost.copyWith(replies: updatedReplies);
+      _commentController.clear();
+      replyingTo = null;
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to add reply: $e')),
+      );
     }
-
-    return currentPost.copyWith(
-      replies: currentPost.replies
-          .map((reply) => _updateReplies(reply, targetId, updatedReplies))
-          .toList(),
-    );
-  }
-
-  ForumPost? _findPostById(ForumPost parent, String id) {
-    if (parent.id == id) return parent;
-    for (var reply in parent.replies) {
-      final found = _findPostById(reply, id);
-      if (found != null) return found;
-    }
-    return null;
   }
 
   void _showReplyModal(BuildContext context, String? parentPostId) {
@@ -121,7 +74,8 @@ class _ForumInsideState extends State<ForumInside> {
       ),
       builder: (context) {
         return Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.fromLTRB(
+              16, 16, 16, MediaQuery.of(context).viewInsets.bottom + 16),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -130,7 +84,7 @@ class _ForumInsideState extends State<ForumInside> {
                 decoration: InputDecoration(
                   hintText: parentPostId == null
                       ? 'Add a comment...'
-                      : 'Replying to ${parentPostId == post.id ? 'main post' : 'a reply'}...',
+                      : 'Replying to a post...',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -155,7 +109,6 @@ class _ForumInsideState extends State<ForumInside> {
   }
 
   Widget _buildReplies(List<ForumPost> replies, int depth) {
-    // Define a maximum nesting depth
     const int maxDepth = 3;
 
     return ListView.builder(
@@ -166,10 +119,8 @@ class _ForumInsideState extends State<ForumInside> {
         final reply = replies[index];
 
         if (depth >= maxDepth) {
-          // Show a "View more replies" button at the max depth
           return TextButton(
             onPressed: () {
-              // Handle expanding to show more replies
               _showNestedReplies(reply);
             },
             child: Text("View more replies"),
@@ -216,8 +167,23 @@ class _ForumInsideState extends State<ForumInside> {
                         ],
                       ),
                     ),
-                    if (reply.replies.isNotEmpty)
-                      _buildReplies(reply.replies, depth + 1),
+                    if (reply.replyCount > 0)
+                      Consumer(
+                        builder: (context, ref, child) {
+                          final repliesAsync = ref.watch(postRepliesProvider((
+                            userToken: widget.userToken,
+                            threadId: widget.thread.id,
+                            parentPostId: reply.id,
+                          )));
+
+                          return repliesAsync.when(
+                            loading: () => LoadingIndicator(),
+                            error: (error, stack) => Text('Error: $error'),
+                            data: (replies) =>
+                                _buildReplies(replies, depth + 1),
+                          );
+                        },
+                      ),
                   ],
                 ),
               ),
@@ -240,7 +206,21 @@ class _ForumInsideState extends State<ForumInside> {
           body: SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: _buildReplies(reply.replies, 0), // Reset depth for modal
+              child: Consumer(
+                builder: (context, ref, child) {
+                  final repliesAsync = ref.watch(postRepliesProvider((
+                    userToken: widget.userToken,
+                    threadId: widget.thread.id,
+                    parentPostId: reply.id,
+                  )));
+
+                  return repliesAsync.when(
+                    loading: () => LoadingIndicator(),
+                    error: (error, stack) => Text('Error: $error'),
+                    data: (replies) => _buildReplies(replies, 0),
+                  );
+                },
+              ),
             ),
           ),
         );
@@ -250,9 +230,14 @@ class _ForumInsideState extends State<ForumInside> {
 
   @override
   Widget build(BuildContext context) {
+    final postsAsync = ref.watch(forumPostsProvider((
+      userToken: widget.userToken,
+      threadId: widget.thread.id,
+    )));
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Group 1'),
+        title: Text(widget.thread.title),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(),
@@ -278,19 +263,21 @@ class _ForumInsideState extends State<ForumInside> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        post.userId,
+                        widget.thread.userId,
                         style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                       ),
                       Text(
-                        '${_formatTime(post.createdAt)}',
+                        _formatTime(widget.thread.createdAt),
                         style: TextStyle(color: Colors.grey, fontSize: 12),
                       ),
                     ],
                   ),
                   SizedBox(height: 8),
                   Text(
-                    post.content,
+                    widget.thread.description,
                     style: TextStyle(fontSize: 14),
                   ),
                   SizedBox(height: 16),
@@ -298,20 +285,21 @@ class _ForumInsideState extends State<ForumInside> {
                     children: [
                       Container(
                         decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(16),
-                            color: Color(0xFFF9B406).withOpacity(.19)),
+                          borderRadius: BorderRadius.circular(16),
+                          color: Color(0xFFF9B406).withOpacity(.19),
+                        ),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 5),
+                            horizontal: 12,
+                            vertical: 5,
+                          ),
                           child: InkWell(
                             onTap: _toggleLike,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text('$likeCount'),
-                                SizedBox(
-                                  width: 8,
-                                ),
+                                SizedBox(width: 8),
                                 Icon(
                                   isLiked
                                       ? Icons.favorite
@@ -323,24 +311,23 @@ class _ForumInsideState extends State<ForumInside> {
                           ),
                         ),
                       ),
-                      SizedBox(
-                        width: 10,
-                      ),
+                      SizedBox(width: 10),
                       Container(
                         decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(16),
-                            color: Color(0xFFF9B406).withOpacity(.19)),
+                          borderRadius: BorderRadius.circular(16),
+                          color: Color(0xFFF9B406).withOpacity(.19),
+                        ),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 5),
+                            horizontal: 12,
+                            vertical: 5,
+                          ),
                           child: InkWell(
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text('7'),
-                                SizedBox(
-                                  width: 8,
-                                ),
+                                Text('${widget.thread.postCount}'),
+                                SizedBox(width: 8),
                                 Icon(
                                   Icons.switch_access_shortcut_outlined,
                                   color: Colors.grey,
@@ -353,7 +340,7 @@ class _ForumInsideState extends State<ForumInside> {
                       Spacer(),
                       TextButton(
                         onPressed: () {
-                          _showReplyModal(context, post.id);
+                          _showReplyModal(context, null);
                         },
                         child: Row(
                           children: [
@@ -375,7 +362,11 @@ class _ForumInsideState extends State<ForumInside> {
             child: SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: _buildReplies(post.replies, 0),
+                child: postsAsync.when(
+                  loading: () => LoadingIndicator(),
+                  error: (error, stack) => Text('Error: $error'),
+                  data: (posts) => _buildReplies(posts, 0),
+                ),
               ),
             ),
           ),

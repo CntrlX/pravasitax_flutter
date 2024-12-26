@@ -1,22 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pravasitax_flutter/src/data/models/forum_model.dart';
+import 'package:pravasitax_flutter/src/data/providers/forum_provider.dart';
 import 'package:pravasitax_flutter/src/interface/screens/forum_nav/forum_user/forum_inside.dart';
 import 'package:pravasitax_flutter/src/interface/screens/main_pages/notification.dart';
 import 'package:pravasitax_flutter/src/interface/screens/main_pages/profile_page.dart';
+import 'package:pravasitax_flutter/src/interface/widgets/loading_indicator.dart';
+import 'dart:developer' as developer;
 
-class ForumPage extends StatefulWidget {
-  @override
-  _ForumPageState createState() => _ForumPageState();
-}
+class ForumPage extends ConsumerWidget {
+  final ForumCategory category;
+  final String userToken;
 
-class _ForumPageState extends State<ForumPage> {
-  List<String> feeds = [
-    "Lorem ipsum dolor sit amet consectetur. Est scelerisque nunc mauris libero. Sit risus non quam posuere nulla.",
-    "Lorem ipsum dolor sit amet consectetur. Est scelerisque nunc mauris libero. Sit risus non quam posuere nulla.",
-    "Lorem ipsum dolor sit amet consectetur. Est scelerisque nunc mauris libero. Sit risus non quam posuere nulla."
-  ]; // Sample list of feeds
+  ForumPage({required this.category, required this.userToken});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final threadsAsync = ref.watch(forumThreadsProvider((
+      userToken: userToken,
+      categoryId: category.id,
+    )));
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -25,8 +29,8 @@ class _ForumPageState extends State<ForumPage> {
         title: Row(
           children: [
             Image.asset(
-              'assets/pravasi_logo.png', // Pravasi Tax logo
-              height: 40, // Adjusted size
+              'assets/pravasi_logo.png',
+              height: 40,
               width: 90,
             ),
             SizedBox(width: 8),
@@ -34,8 +38,7 @@ class _ForumPageState extends State<ForumPage> {
         ),
         actions: [
           IconButton(
-            icon:
-                Icon(Icons.notifications_active_outlined), // Notification icon
+            icon: Icon(Icons.notifications_active_outlined),
             onPressed: () {
               Navigator.push(
                 context,
@@ -51,10 +54,10 @@ class _ForumPageState extends State<ForumPage> {
               );
             },
             child: Padding(
-              padding: const EdgeInsets.all(8.0), // Add padding
+              padding: const EdgeInsets.all(8.0),
               child: CircleAvatar(
                 backgroundImage: NetworkImage(
-                  'https://example.com/profile_pic.png', // Replace with actual URL for profile image
+                  'https://example.com/profile_pic.png',
                 ),
                 radius: 20,
               ),
@@ -75,21 +78,19 @@ class _ForumPageState extends State<ForumPage> {
                 radius: 15,
                 backgroundColor: Colors.blue,
                 child: Text(
-                  'G', // Replace with your group image or text
+                  category.title[0],
                   style: TextStyle(color: Colors.white),
                 ),
               ),
               SizedBox(width: 8.0),
               Text(
-                'Group 1',
+                category.title,
                 style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
               ),
               Spacer(),
               IconButton(
                 icon: Icon(Icons.more_vert),
-                onPressed: () {
-                  // Add your functionality here
-                },
+                onPressed: () {},
               ),
             ],
           ),
@@ -97,25 +98,32 @@ class _ForumPageState extends State<ForumPage> {
       ),
       body: Stack(
         children: [
-          Column(
-            children: [
-              Expanded(
-                child: ListView.builder(
-                  itemCount: feeds.length,
-                  itemBuilder: (context, index) {
-                    return _buildFeedCard(feeds[index]);
-                  },
-                ),
-              ),
-            ],
+          threadsAsync.when(
+            loading: () => LoadingIndicator(),
+            error: (error, stack) {
+              developer.log('Error loading threads: $error\n$stack',
+                  name: 'ForumPage');
+              return Center(child: Text('Error: $error'));
+            },
+            data: (threads) {
+              developer.log('Loaded ${threads.length} threads',
+                  name: 'ForumPage');
+              return ListView.builder(
+                itemCount: threads.length,
+                itemBuilder: (context, index) {
+                  final thread = threads[index];
+                  developer.log('Building thread: ${thread.title}',
+                      name: 'ForumPage');
+                  return _buildThreadCard(context, thread);
+                },
+              );
+            },
           ),
           Positioned(
             bottom: 16,
             right: 16,
             child: FloatingActionButton.extended(
-              onPressed: () {
-                _showAddPostDialog(context);
-              },
+              onPressed: () => _showCreateThreadDialog(context, ref),
               label: Text('Add post', style: TextStyle(color: Colors.white)),
               icon: Icon(Icons.add, color: Colors.white),
               backgroundColor: Colors.blue[900],
@@ -126,27 +134,34 @@ class _ForumPageState extends State<ForumPage> {
     );
   }
 
-  // Method to build each feed card
-  Widget _buildFeedCard(String feedText) {
+  Widget _buildThreadCard(BuildContext context, ForumThread thread) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      child: InkWell(onTap: () {
-              Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ForumInside(),
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ForumInside(
+                thread: thread,
+                userToken: userToken,
               ),
-            );
-      },
-        child: Container(
-          decoration: BoxDecoration(boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.2),
-              blurRadius: 1,
-              spreadRadius: 0,
-              offset: Offset(0, 1),
             ),
-          ], borderRadius: BorderRadius.circular(10), color: Colors.white),
+          );
+        },
+        child: Container(
+          decoration: BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.2),
+                blurRadius: 1,
+                spreadRadius: 0,
+                offset: Offset(0, 1),
+              ),
+            ],
+            borderRadius: BorderRadius.circular(10),
+            color: Colors.white,
+          ),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -157,21 +172,22 @@ class _ForumPageState extends State<ForumPage> {
                     CircleAvatar(
                       backgroundColor: Colors.grey[300],
                       radius: 20,
-                      child: Icon(Icons.person,
-                          color: Colors.white), // Placeholder for avatar
+                      child: Icon(Icons.person, color: Colors.white),
                     ),
                     SizedBox(width: 10),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Consultant x',
+                          thread.title,
                           style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 16),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
                         ),
                         SizedBox(height: 4),
                         Text(
-                          '3 hr. ago',
+                          _formatTime(thread.createdAt),
                           style: TextStyle(color: Colors.grey, fontSize: 12),
                         ),
                       ],
@@ -179,7 +195,7 @@ class _ForumPageState extends State<ForumPage> {
                   ],
                 ),
                 SizedBox(height: 10),
-                Text(feedText),
+                Text(thread.description),
                 SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -187,7 +203,10 @@ class _ForumPageState extends State<ForumPage> {
                     TextButton.icon(
                       onPressed: () {},
                       icon: Icon(Icons.mode_comment_outlined, size: 18),
-                      label: Text('Comment', style: TextStyle(fontSize: 14)),
+                      label: Text(
+                        '${thread.postCount} Comments',
+                        style: TextStyle(fontSize: 14),
+                      ),
                     ),
                     TextButton.icon(
                       onPressed: () {},
@@ -204,8 +223,10 @@ class _ForumPageState extends State<ForumPage> {
     );
   }
 
-  // Method to show the Add Post dialog (as in the second image)
-  void _showAddPostDialog(BuildContext context) {
+  void _showCreateThreadDialog(BuildContext context, WidgetRef ref) {
+    final titleController = TextEditingController();
+    final descriptionController = TextEditingController();
+
     showDialog(
       context: context,
       builder: (context) {
@@ -214,77 +235,73 @@ class _ForumPageState extends State<ForumPage> {
             borderRadius: BorderRadius.circular(16.0),
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
-            child: Stack(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                Text(
+                  'Create New Thread',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 16),
+                TextField(
+                  controller: titleController,
+                  decoration: InputDecoration(
+                    labelText: 'Title',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                SizedBox(height: 16),
+                TextField(
+                  controller: descriptionController,
+                  maxLines: 3,
+                  decoration: InputDecoration(
+                    labelText: 'Description',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.network(
-                        'https://via.placeholder.com/400',
-                        height: 150,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                      ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text('Cancel'),
                     ),
-                    SizedBox(height: 16),
-                    Text(
-                      'Get access to our unlimited resources',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.black54,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: 16),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          // Add your subscription logic here
-                        },
-                        child: Text('Subscribe now'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFF040F4F),
-                          foregroundColor: Colors.white,
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                      ),
+                    ElevatedButton(
+                      onPressed: () async {
+                        if (titleController.text.isNotEmpty &&
+                            descriptionController.text.isNotEmpty) {
+                          try {
+                            await ref.read(createThreadProvider((
+                              userToken: userToken,
+                              title: titleController.text,
+                              description: descriptionController.text,
+                              categoryId: category.id,
+                              postImage: null,
+                            )).future);
+
+                            Navigator.pop(context);
+
+                            // Refresh threads
+                            ref.refresh(forumThreadsProvider((
+                              userToken: userToken,
+                              categoryId: category.id,
+                            )));
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                  content: Text('Failed to create thread: $e')),
+                            );
+                          }
+                        }
+                      },
+                      child: Text('Create'),
                     ),
                   ],
-                ),
-                Positioned(
-                  right: 0,
-                  top: 0,
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Icon(
-                        Icons.close,
-                        color: Colors.grey[800],
-                      ),
-                    ),
-                  ),
                 ),
               ],
             ),
@@ -292,5 +309,16 @@ class _ForumPageState extends State<ForumPage> {
         );
       },
     );
+  }
+
+  String _formatTime(DateTime dateTime) {
+    final duration = DateTime.now().difference(dateTime);
+    if (duration.inMinutes < 60) {
+      return '${duration.inMinutes}m ago';
+    } else if (duration.inHours < 24) {
+      return '${duration.inHours}h ago';
+    } else {
+      return '${duration.inDays}d ago';
+    }
   }
 }
