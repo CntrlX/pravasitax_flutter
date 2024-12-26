@@ -9,23 +9,37 @@ import 'package:pravasitax_flutter/src/interface/screens/i_hub_nav/hub_page.dart
 import 'package:pravasitax_flutter/src/interface/screens/main_pages/home_page.dart';
 import 'package:pravasitax_flutter/src/interface/screens/main_pages/notification.dart';
 import 'package:pravasitax_flutter/src/interface/screens/main_pages/profile_page.dart'; // Import ProfilePage
+import 'package:pravasitax_flutter/src/data/services/secure_storage_service.dart';
 
 class MainPageConsultantPage extends StatefulWidget {
   @override
-  _MainPageState createState() => _MainPageState();
+  _MainPageConsultantState createState() => _MainPageConsultantState();
 }
 
-class _MainPageState extends State<MainPage> {
+class _MainPageConsultantState extends State<MainPageConsultantPage> {
   int _selectedIndex = 0;
+  String? userToken;
+  late final List<Widget> _widgetOptions;
 
-  // List of pages to display for each tab
-  final List<Widget> _widgetOptions = <Widget>[
-    HomePage(), // Home Page
-    FeedPage(), // Feed Page
-    HubPage(), // I-Hub Page
-    ForumList(), // Forum Page
-    ChatPage(), // Chat Page
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _loadUserToken();
+  }
+
+  Future<void> _loadUserToken() async {
+    final token = await SecureStorageService.getAuthToken();
+    setState(() {
+      userToken = token;
+      _widgetOptions = <Widget>[
+        HomePage(), // Home Page
+        FeedPage(), // Feed Page
+        HubPage(), // I-Hub Page
+        if (userToken != null) ForumPage(userToken: userToken!), // Forum Page
+        ChatPage(), // Chat Page
+      ];
+    });
+  }
 
   // Method to update the selected index when an item is tapped
   void _onItemTapped(int index) {

@@ -47,6 +47,7 @@ class ForumThread {
   final String description;
   final String categoryId;
   final String userId;
+  final String authorName;
   final DateTime createdAt;
   final int status;
   final String statusText;
@@ -58,6 +59,7 @@ class ForumThread {
     required this.description,
     required this.categoryId,
     required this.userId,
+    required this.authorName,
     required this.createdAt,
     required this.status,
     required this.statusText,
@@ -73,6 +75,7 @@ class ForumThread {
         description: json['description']?.toString() ?? '',
         categoryId: json['category_id']?.toString() ?? '',
         userId: json['author']?.toString() ?? '',
+        authorName: json['author_name'] ?? json['author'],
         createdAt: _parseDate(json['created_at']?.toString() ?? ''),
         status: json['status'] is int ? json['status'] : 0,
         statusText: json['status_text']?.toString() ?? '',
@@ -130,6 +133,7 @@ class ForumThread {
       'description': description,
       'category_id': categoryId,
       'author': userId,
+      'author_name': authorName,
       'created_at': createdAt.toIso8601String(),
       'status': status,
       'status_text': statusText,
@@ -143,50 +147,56 @@ class ForumPost {
   final String threadId;
   final String content;
   final String userId;
-  final String? parentPostId;
-  final int replyCount;
+  final String authorName;
   final DateTime createdAt;
+  final int status;
+  final String statusText;
+  final String? parentPostId;
   final List<ForumPost> replies;
+  final int replyCount;
 
   ForumPost({
     required this.id,
     required this.threadId,
     required this.content,
     required this.userId,
-    this.parentPostId,
-    this.replyCount = 0,
+    required this.authorName,
     required this.createdAt,
-    this.replies = const [],
+    required this.status,
+    required this.statusText,
+    this.parentPostId,
+    required this.replies,
+    required this.replyCount,
   });
 
   factory ForumPost.fromJson(Map<String, dynamic> json) {
     developer.log('Parsing post: $json', name: 'ForumModel');
-    try {
-      return ForumPost(
-        id: json['_id']?.toString() ?? json['id']?.toString() ?? '',
-        threadId: json['thread_id']?.toString() ?? '',
-        content: json['content']?.toString() ??
-            json['post_content']?.toString() ??
-            '',
-        userId: json['user_id']?.toString() ?? json['author']?.toString() ?? '',
-        parentPostId: json['parent_post_id']?.toString(),
-        replyCount: json['reply_count'] is int ? json['reply_count'] : 0,
-        createdAt: _parseDate(json['created_at']?.toString() ?? ''),
-        replies: (json['replies'] as List?)
-                ?.map((reply) => ForumPost.fromJson(reply))
-                .toList() ??
-            [],
-      );
-    } catch (e, stack) {
-      developer.log('Error parsing post: $e\n$stack', name: 'ForumModel');
-      rethrow;
-    }
+    return ForumPost(
+      id: json['_id'],
+      threadId: json['thread_id'],
+      content: json['post_content'],
+      userId: json['author'],
+      authorName: json['author_name'] ?? json['author'],
+      createdAt: _parseDate(json['created_at']),
+      status: json['status'],
+      statusText: json['status_text'],
+      parentPostId: json['parent_post_id'],
+      replies: (json['replies'] as List<dynamic>? ?? [])
+          .map((reply) => ForumPost.fromJson(reply))
+          .toList(),
+      replyCount: json['reply_count'] ?? 0,
+    );
   }
 
   static DateTime _parseDate(String dateStr) {
     developer.log('Parsing date: $dateStr', name: 'ForumModel');
     try {
-      // Parse date in format "17 Dec 24, 16:15"
+      // First try parsing ISO format (2024-12-26 10:58:55.736758)
+      if (dateStr.contains('-')) {
+        return DateTime.parse(dateStr.replaceAll(' ', 'T'));
+      }
+
+      // Then try parsing custom format (17 Dec 24, 16:15)
       final parts = dateStr.split(', ');
       final dateParts = parts[0].split(' ');
       final timeParts = parts[1].split(':');
@@ -224,13 +234,16 @@ class ForumPost {
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      '_id': id,
       'thread_id': threadId,
-      'content': content,
-      'user_id': userId,
+      'post_content': content,
+      'author': userId,
+      'author_name': authorName,
       'parent_post_id': parentPostId,
       'reply_count': replyCount,
       'created_at': createdAt.toIso8601String(),
+      'status': status,
+      'status_text': statusText,
       'replies': replies.map((reply) => reply.toJson()).toList(),
     };
   }
@@ -240,20 +253,26 @@ class ForumPost {
     String? threadId,
     String? content,
     String? userId,
-    String? parentPostId,
-    int? replyCount,
+    String? authorName,
     DateTime? createdAt,
+    int? status,
+    String? statusText,
+    String? parentPostId,
     List<ForumPost>? replies,
+    int? replyCount,
   }) {
     return ForumPost(
       id: id ?? this.id,
       threadId: threadId ?? this.threadId,
       content: content ?? this.content,
       userId: userId ?? this.userId,
-      parentPostId: parentPostId ?? this.parentPostId,
-      replyCount: replyCount ?? this.replyCount,
+      authorName: authorName ?? this.authorName,
       createdAt: createdAt ?? this.createdAt,
+      status: status ?? this.status,
+      statusText: statusText ?? this.statusText,
+      parentPostId: parentPostId ?? this.parentPostId,
       replies: replies ?? this.replies,
+      replyCount: replyCount ?? this.replyCount,
     );
   }
 }
