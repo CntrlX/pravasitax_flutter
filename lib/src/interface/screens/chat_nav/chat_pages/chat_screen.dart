@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:pravasitax_flutter/src/core/theme/app_theme.dart';
+import 'package:pravasitax_flutter/src/interface/screens/chat_nav/chat_pages/chat_info.dart';
 
 class UserChatScreen extends StatefulWidget {
   final String title;
@@ -36,20 +38,41 @@ class _UserChatScreenState extends State<UserChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
+        automaticallyImplyLeading: false,
+        backgroundColor: Color(0xFFFFCD29).withOpacity(.47),
+        titleSpacing: 0, // Reduce spacing to align with leading
         title: Row(
           children: [
+            IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () => Navigator.pop(context),
+            ),
             CircleAvatar(
               backgroundImage: NetworkImage(widget.imageUrl),
             ),
             const SizedBox(width: 8),
-            Text(widget.title),
+            GestureDetector(onTap: () {
+               Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ChatInfo(
+            
+                ),
+              ),
+            );
+            },
+              child: Expanded(
+                child: Text(
+                  widget.title,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
-        backgroundColor: Colors.amber.shade200,
         actions: [
           IconButton(
             icon: const Icon(Icons.phone, color: Colors.black),
@@ -67,16 +90,14 @@ class _UserChatScreenState extends State<UserChatScreen> {
                 final message = messages[index];
                 final isSent = message["type"] == "sent";
                 return Align(
-                  alignment: isSent
-                      ? Alignment.centerRight
-                      : Alignment.centerLeft,
+                  alignment:
+                      isSent ? Alignment.centerRight : Alignment.centerLeft,
                   child: Container(
                     margin: const EdgeInsets.symmetric(vertical: 4),
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: isSent
-                          ? Colors.amber.shade100
-                          : Colors.grey.shade200,
+                      color:
+                          isSent ? Colors.amber.shade100 : Colors.grey.shade200,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
@@ -89,28 +110,77 @@ class _UserChatScreenState extends State<UserChatScreen> {
             ),
           ),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: const BoxDecoration(color: Colors.white),
-            child: Row(
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.attach_file),
-                  onPressed: () {},
-                ),
-                Expanded(
-                  child: TextField(
-                    controller: _controller,
-                    decoration: const InputDecoration(
-                      hintText: "Type your message here",
-                      border: InputBorder.none,
-                    ),
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.send, color: Colors.amber),
-                  onPressed: _sendMessage,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(16),
+                topRight: Radius.circular(16),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.2),
+                  spreadRadius: 2,
+                  blurRadius: 8,
+                  offset: const Offset(0, -2), // shadow positioned above
                 ),
               ],
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            child: Container(
+              padding:
+                  const EdgeInsets.all(8.0), // Optional padding for the row
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                          border: Border.all(width: .5, color: Colors.grey),
+                          borderRadius: BorderRadius.circular(5)),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: TextField(
+                                controller: _controller,
+                                decoration: const InputDecoration(
+                                  hintStyle: TextStyle(
+                                      color:
+                                          Color.fromARGB(255, 234, 224, 224)),
+                                  hintText: "Type your message here",
+                                  border: InputBorder.none,
+                                ),
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.attach_file,
+                                color: Colors.grey),
+                            onPressed: () {},
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8), // Add some spacing if needed
+                  SizedBox(
+                    width: 55,
+                    height: 55,
+                    child: Container(
+                      decoration: const BoxDecoration(
+                          color: AppPalette.kPrimaryColor,
+                          borderRadius: BorderRadius.all(Radius.circular(10))),
+                      padding: const EdgeInsets.all(
+                          8), // to give the icon some space
+                      child: IconButton(
+                        icon: const Icon(Icons.send_outlined,
+                            color: Colors.black),
+                        onPressed: _sendMessage,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],

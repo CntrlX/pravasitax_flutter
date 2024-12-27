@@ -29,44 +29,67 @@ class ServicesTab extends StatelessWidget {
       itemCount: services.length,
       itemBuilder: (context, index) {
         final service = services[index];
-        return Card(
-          elevation: 2,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          child: ListTile(
-            leading: CircleAvatar(
-              child: Icon(service['icon'], size: 28),
-            ),
-            title: Text(service['title']),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Service ID: ${service['serviceId']}'),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    const Icon(Icons.calendar_today, size: 16, color: Colors.grey),
-                    const SizedBox(width: 4),
-                    Text(service['date']),
-                  ],
-                ),
-              ],
-            ),
-            trailing: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        return Container(
+            padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 1),
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
               decoration: BoxDecoration(
-                color: service['statusColor'].withOpacity(0.2),
-                borderRadius: BorderRadius.circular(4),
+                  color: Colors.white,
+                  border: Border.all(
+                      width: .7,
+                      color: const Color.fromARGB(255, 219, 213, 213)),
+                  borderRadius: BorderRadius.circular(16)),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    child: Icon(service['icon'], size: 28),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          service['title'],
+                          style: const TextStyle(
+                            color: Colors.black54,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text('Service ID: ${service['serviceId']}'),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            const Icon(Icons.calendar_today,
+                                size: 16, color: Colors.grey),
+                            const SizedBox(width: 4),
+                            Text(service['date']),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: service['statusColor'].withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      service['status'],
+                      style: TextStyle(
+                        color: service['statusColor'],
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              child: Text(
-                service['status'],
-                style: TextStyle(
-                  color: service['statusColor'],
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-        );
+            ));
       },
     );
   }

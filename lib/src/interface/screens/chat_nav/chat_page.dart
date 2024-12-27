@@ -288,6 +288,10 @@ import 'package:flutter/material.dart';
 import 'package:pravasitax_flutter/src/interface/screens/chat_nav/chat_pages/enquires_tab.dart';
 import 'package:pravasitax_flutter/src/interface/screens/chat_nav/chat_pages/services_tab.dart';
 
+import 'package:flutter/material.dart';
+import 'package:pravasitax_flutter/src/interface/screens/chat_nav/chat_pages/enquires_tab.dart';
+import 'package:pravasitax_flutter/src/interface/screens/chat_nav/chat_pages/services_tab.dart';
+
 class ChatPage extends StatelessWidget {
   const ChatPage({Key? key}) : super(key: key);
 
@@ -299,18 +303,22 @@ class ChatPage extends StatelessWidget {
         appBar: AppBar(
           backgroundColor: Colors.white,
           elevation: 0,
-          bottom: const TabBar(
-            indicatorColor: Colors.amber, // Line under the selected tab
-            indicatorWeight: 4, // Thickness of the indicator
-            labelColor: Colors.amber, // Selected tab text color
-            unselectedLabelColor: Colors.grey, // Unselected tab text color
-            labelStyle: TextStyle(
-              fontWeight: FontWeight.bold, // Style for selected tab text
+          bottom: TabBar(
+            indicatorSize: TabBarIndicatorSize.tab,
+            indicator: BoxDecoration(
+              color: Color(0xFFF9B406)
+                  .withOpacity(.53),
             ),
-            unselectedLabelStyle: TextStyle(
-              fontWeight: FontWeight.normal, // Style for unselected tab text
+            labelColor: Colors.black, 
+            unselectedLabelColor:
+                Colors.black,
+            labelStyle: const TextStyle(
+              fontWeight: FontWeight.bold,
             ),
-            tabs: [
+            unselectedLabelStyle: const TextStyle(
+              fontWeight: FontWeight.normal,
+            ),
+            tabs: const [
               Tab(text: 'ENQUIRIES'),
               Tab(text: 'SERVICES'),
             ],
