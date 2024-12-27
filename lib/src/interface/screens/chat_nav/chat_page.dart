@@ -288,10 +288,6 @@ import 'package:flutter/material.dart';
 import 'package:pravasitax_flutter/src/interface/screens/chat_nav/chat_pages/enquires_tab.dart';
 import 'package:pravasitax_flutter/src/interface/screens/chat_nav/chat_pages/services_tab.dart';
 
-import 'package:flutter/material.dart';
-import 'package:pravasitax_flutter/src/interface/screens/chat_nav/chat_pages/enquires_tab.dart';
-import 'package:pravasitax_flutter/src/interface/screens/chat_nav/chat_pages/services_tab.dart';
-
 class ChatPage extends StatelessWidget {
   const ChatPage({Key? key}) : super(key: key);
 
@@ -300,28 +296,28 @@ class ChatPage extends StatelessWidget {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          elevation: 0,
-          bottom: TabBar(
-            indicatorSize: TabBarIndicatorSize.tab,
-            indicator: BoxDecoration(
-              color: Color(0xFFF9B406)
-                  .withOpacity(.53),
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(48), // Adjusts TabBar height
+          child: Container(
+            color: Colors.white,
+            child: TabBar(
+              indicatorSize: TabBarIndicatorSize.tab,
+              indicator: BoxDecoration(
+                color: Color(0xFFF9B406).withOpacity(.53),
+              ),
+              labelColor: Colors.black,
+              unselectedLabelColor: Colors.black,
+              labelStyle: const TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+              unselectedLabelStyle: const TextStyle(
+                fontWeight: FontWeight.normal,
+              ),
+              tabs: const [
+                Tab(text: 'ENQUIRIES'),
+                Tab(text: 'SERVICES'),
+              ],
             ),
-            labelColor: Colors.black, 
-            unselectedLabelColor:
-                Colors.black,
-            labelStyle: const TextStyle(
-              fontWeight: FontWeight.bold,
-            ),
-            unselectedLabelStyle: const TextStyle(
-              fontWeight: FontWeight.normal,
-            ),
-            tabs: const [
-              Tab(text: 'ENQUIRIES'),
-              Tab(text: 'SERVICES'),
-            ],
           ),
         ),
         body: const TabBarView(
