@@ -18,7 +18,7 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   int _selectedIndex = 0;
   String? userToken;
-  late final List<Widget> _widgetOptions;
+  late List<Widget> _widgetOptions = []; // Initialize with an empty list
 
   @override
   void initState() {
@@ -40,14 +40,12 @@ class _MainPageState extends State<MainPage> {
     });
   }
 
-  // Method to update the selected index when an item is tapped
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
   }
 
-  // Helper method to dynamically build the navigation icons
   Widget _buildNavBarIcon(String activeIcon, String inactiveIcon, int index) {
     return SvgPicture.asset(
       _selectedIndex == index ? activeIcon : inactiveIcon,
@@ -65,8 +63,8 @@ class _MainPageState extends State<MainPage> {
         title: Row(
           children: [
             Image.asset(
-              'assets/pravasi_logo.png', // Pravasi Tax logo
-              height: 40, // Adjusted size
+              'assets/pravasi_logo.png',
+              height: 40,
               width: 90,
             ),
             SizedBox(width: 8),
@@ -74,10 +72,8 @@ class _MainPageState extends State<MainPage> {
         ),
         actions: [
           IconButton(
-            icon:
-                Icon(Icons.notifications_active_outlined), // Notification icon
+            icon: Icon(Icons.notifications_active_outlined),
             onPressed: () {
-              // Navigate to NotificationPage when pressed
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => NotificationPage()),
@@ -86,17 +82,16 @@ class _MainPageState extends State<MainPage> {
           ),
           GestureDetector(
             onTap: () {
-              // Navigate to ProfilePage when the profile image is tapped
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => ProfilePage()),
               );
             },
             child: Padding(
-              padding: const EdgeInsets.all(8.0), // Add padding
+              padding: const EdgeInsets.all(8.0),
               child: CircleAvatar(
                 backgroundImage: NetworkImage(
-                  'https://example.com/profile_pic.png', // Replace with actual URL for profile image
+                  'https://example.com/profile_pic.png',
                 ),
                 radius: 20,
               ),
@@ -104,11 +99,11 @@ class _MainPageState extends State<MainPage> {
           ),
         ],
       ),
-
-      // The body will dynamically change based on the selected index
-      body: _widgetOptions[_selectedIndex],
-
-      // Bottom Navigation Bar
+      body: _widgetOptions.isNotEmpty
+          ? _widgetOptions[_selectedIndex]
+          : Center(
+              child:
+                  CircularProgressIndicator()), // Show a loader while initializing
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(
@@ -155,7 +150,7 @@ class _MainPageState extends State<MainPage> {
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.blue,
         unselectedItemColor: Colors.grey,
-        onTap: _onItemTapped, // Call _onItemTapped when an item is tapped
+        onTap: _onItemTapped,
       ),
     );
   }
