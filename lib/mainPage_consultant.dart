@@ -20,7 +20,13 @@ class MainPageConsultantPage extends StatefulWidget {
 class _MainPageConsultantState extends State<MainPageConsultantPage> {
   int _selectedIndex = 0;
   String? userToken;
-  late final List<Widget> _widgetOptions;
+  List<Widget> _widgetOptions = [
+    HomePage(), // Home Page
+    FeedPage(), // Feed Page
+    HubPage(), // I-Hub Page
+    Container(), // Placeholder for Forum Page
+    ChatPage(), // Chat Page
+  ];
 
   @override
   void initState() {
@@ -32,14 +38,10 @@ class _MainPageConsultantState extends State<MainPageConsultantPage> {
     final token = await SecureStorageService.getAuthToken();
     setState(() {
       userToken = token;
-      _widgetOptions = <Widget>[
-        HomePage(), // Home Page
-        FeedPage(), // Feed Page
-        HubPage(), // I-Hub Page
-        if (userToken != null)
-          ForumPageConsultant(userToken: userToken!), // Forum Page
-        ChatPage(), // Chat Page
-      ];
+      // Update Forum page with actual token
+      if (userToken != null) {
+        _widgetOptions[3] = ForumPageConsultant(userToken: userToken!);
+      }
     });
   }
 
@@ -63,6 +65,8 @@ class _MainPageConsultantState extends State<MainPageConsultantPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
         title: Row(
           children: [
             Image.asset(
@@ -78,7 +82,6 @@ class _MainPageConsultantState extends State<MainPageConsultantPage> {
             icon:
                 Icon(Icons.notifications_active_outlined), // Notification icon
             onPressed: () {
-              // Navigate to NotificationPage when pressed
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => NotificationPage()),
@@ -87,17 +90,16 @@ class _MainPageConsultantState extends State<MainPageConsultantPage> {
           ),
           GestureDetector(
             onTap: () {
-              // Navigate to ProfilePage when the profile image is tapped
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => ProfilePage()),
               );
             },
             child: Padding(
-              padding: const EdgeInsets.all(8.0), // Add padding
+              padding: const EdgeInsets.all(8.0),
               child: CircleAvatar(
                 backgroundImage: NetworkImage(
-                  'https://example.com/profile_pic.png', // Replace with actual URL for profile image
+                  'https://example.com/profile_pic.png',
                 ),
                 radius: 20,
               ),
@@ -105,11 +107,9 @@ class _MainPageConsultantState extends State<MainPageConsultantPage> {
           ),
         ],
       ),
-
-      // The body will dynamically change based on the selected index
-      body: _widgetOptions[_selectedIndex],
-
-      // Bottom Navigation Bar
+      body: _widgetOptions.isNotEmpty
+          ? _widgetOptions[_selectedIndex]
+          : Center(child: CircularProgressIndicator()),
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(

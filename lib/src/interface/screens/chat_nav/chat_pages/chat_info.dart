@@ -22,6 +22,8 @@ class ChatInfo extends StatelessWidget {
         appBar: AppBar(
           automaticallyImplyLeading: false,
           titleSpacing: 0,
+          backgroundColor: Colors.white,
+          surfaceTintColor: Colors.transparent,
           title: Row(
             children: [
               IconButton(
@@ -52,7 +54,7 @@ class ChatInfo extends StatelessWidget {
           bottom: TabBar(
             indicatorSize: TabBarIndicatorSize.tab,
             indicator: BoxDecoration(
-              color: Color(0xFFF9B406).withOpacity(.53),
+              color: const Color(0xFFF9B406).withOpacity(.53),
             ),
             labelColor: Colors.black,
             unselectedLabelColor: Colors.black,

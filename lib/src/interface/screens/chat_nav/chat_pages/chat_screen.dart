@@ -76,20 +76,20 @@ class _UserChatScreenState extends ConsumerState<UserChatScreen> {
               backgroundImage: NetworkImage(widget.imageUrl),
             ),
             const SizedBox(width: 8),
-            GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ChatInfo(
-                      conversationId: widget.conversationId,
-                      title: widget.title,
-                      imageUrl: widget.imageUrl,
+            Expanded(
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ChatInfo(
+                        conversationId: widget.conversationId,
+                        title: widget.title,
+                        imageUrl: widget.imageUrl,
+                      ),
                     ),
-                  ),
-                );
-              },
-              child: Expanded(
+                  );
+                },
                 child: Text(
                   widget.title,
                   style: const TextStyle(

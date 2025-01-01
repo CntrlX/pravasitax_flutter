@@ -9,12 +9,14 @@ class AuthState {
   final String? token;
   final String? error;
   final String? userType;
+  final String? userId;
 
   AuthState({
     this.isAuthenticated = false,
     this.token,
     this.error,
     this.userType,
+    this.userId,
   });
 
   AuthState copyWith({
@@ -22,12 +24,14 @@ class AuthState {
     String? token,
     String? error,
     String? userType,
+    String? userId,
   }) {
     return AuthState(
       isAuthenticated: isAuthenticated ?? this.isAuthenticated,
       token: token ?? this.token,
       error: error ?? this.error,
       userType: userType ?? this.userType,
+      userId: userId ?? this.userId,
     );
   }
 }
@@ -78,13 +82,17 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
       final token = response['token'] as String;
       final userType = response['user_type'] as String;
+      final userId = response['user_id'] as String;
+
       await SecureStorageService.saveAuthToken(token);
       await SecureStorageService.saveUserType(userType);
+      await SecureStorageService.saveUserId(userId);
 
       state = state.copyWith(
         isAuthenticated: true,
         token: token,
         userType: userType,
+        userId: userId,
         error: null,
       );
 

@@ -171,21 +171,29 @@ class ForumPost {
 
   factory ForumPost.fromJson(Map<String, dynamic> json) {
     developer.log('Parsing post: $json', name: 'ForumModel');
-    return ForumPost(
-      id: json['_id'],
-      threadId: json['thread_id'],
-      content: json['post_content'],
-      userId: json['author'],
-      authorName: json['author_name'] ?? json['author'],
-      createdAt: _parseDate(json['created_at']),
-      status: json['status'],
-      statusText: json['status_text'],
-      parentPostId: json['parent_post_id'],
-      replies: (json['replies'] as List<dynamic>? ?? [])
-          .map((reply) => ForumPost.fromJson(reply))
-          .toList(),
-      replyCount: json['reply_count'] ?? 0,
-    );
+    try {
+      return ForumPost(
+        id: json['_id']?.toString() ?? '',
+        threadId: json['thread_id']?.toString() ?? '',
+        content: json['post_content']?.toString() ?? '',
+        userId: json['author']?.toString() ?? '',
+        authorName: json['author_name']?.toString() ??
+            json['author']?.toString() ??
+            'Unknown',
+        createdAt: _parseDate(
+            json['created_at']?.toString() ?? DateTime.now().toString()),
+        status: json['status'] is int ? json['status'] : 1,
+        statusText: json['status_text']?.toString() ?? 'active',
+        parentPostId: json['parent_post_id']?.toString(),
+        replies: (json['replies'] as List<dynamic>? ?? [])
+            .map((reply) => ForumPost.fromJson(reply))
+            .toList(),
+        replyCount: json['reply_count'] is int ? json['reply_count'] : 0,
+      );
+    } catch (e, stack) {
+      developer.log('Error parsing post: $e\n$stack', name: 'ForumModel');
+      rethrow;
+    }
   }
 
   static DateTime _parseDate(String dateStr) {

@@ -271,31 +271,7 @@ class _LoginFrontPageState extends ConsumerState<LoginFrontPage> {
                       ),
                     ),
                     const SizedBox(height: 40),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: List.generate(
-                        6,
-                        (index) => SizedBox(
-                          width: 45,
-                          height: 55,
-                          child: OTPTextField(
-                            controller: _otpControllers[index],
-                            focusNode: _otpFocusNodes[index],
-                            onChanged: (value) {
-                              if (value.isNotEmpty && index < 5) {
-                                _otpFocusNodes[index + 1].requestFocus();
-                              }
-                            },
-                            onBackspace: () {
-                              if (index > 0) {
-                                _otpControllers[index - 1].clear();
-                                _otpFocusNodes[index - 1].requestFocus();
-                              }
-                            },
-                          ),
-                        ),
-                      ),
-                    ),
+                    _buildOtpFields(),
                     const SizedBox(height: 40),
                     SizedBox(
                       width: double.infinity,
@@ -435,6 +411,78 @@ class _LoginFrontPageState extends ConsumerState<LoginFrontPage> {
     }
   }
 
+  Widget _buildOtpFields() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: List.generate(
+        6,
+        (index) => SizedBox(
+          width: 45,
+          height: 55,
+          child: Focus(
+            onKeyEvent: (node, event) {
+              if (event is KeyDownEvent &&
+                  event.logicalKey == LogicalKeyboardKey.paste) {
+                Clipboard.getData('text/plain').then((value) {
+                  if (value?.text != null) {
+                    final pastedText =
+                        value!.text!.replaceAll(RegExp(r'[^0-9]'), '');
+                    if (pastedText.isNotEmpty) {
+                      // Distribute pasted text across OTP fields
+                      for (int i = 0; i < pastedText.length && i < 6; i++) {
+                        _otpControllers[i].text = pastedText[i];
+                      }
+                      // Move focus to appropriate field
+                      if (pastedText.length < 6) {
+                        _otpFocusNodes[pastedText.length].requestFocus();
+                      }
+                    }
+                  }
+                });
+                return KeyEventResult.handled;
+              }
+              return KeyEventResult.ignored;
+            },
+            child: OTPTextField(
+              controller: _otpControllers[index],
+              focusNode: _otpFocusNodes[index],
+              onChanged: (value) {
+                if (value.length > 1) {
+                  // Handle paste from TextField paste operation
+                  final pastedText = value.replaceAll(RegExp(r'[^0-9]'), '');
+                  if (pastedText.isNotEmpty) {
+                    // Set first digit in current field
+                    _otpControllers[index].text = pastedText[0];
+
+                    // Distribute remaining digits
+                    for (int i = 1;
+                        i < pastedText.length && i + index < 6;
+                        i++) {
+                      _otpControllers[i + index].text = pastedText[i];
+                    }
+
+                    // Move focus to appropriate field
+                    int nextIndex = index + pastedText.length;
+                    if (nextIndex >= 6) nextIndex = 5;
+                    _otpFocusNodes[nextIndex].requestFocus();
+                  }
+                } else if (value.isNotEmpty && index < 5) {
+                  _otpFocusNodes[index + 1].requestFocus();
+                }
+              },
+              onBackspace: () {
+                if (index > 0) {
+                  _otpControllers[index - 1].clear();
+                  _otpFocusNodes[index - 1].requestFocus();
+                }
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   void dispose() {
     _pageController.dispose();
@@ -486,7 +534,7 @@ class _OTPTextFieldState extends State<OTPTextField> {
         focusNode: widget.focusNode,
         textAlign: TextAlign.center,
         keyboardType: TextInputType.number,
-        maxLength: 1,
+        maxLength: 6,
         style: const TextStyle(
           fontSize: 24,
           fontWeight: FontWeight.bold,
@@ -516,11 +564,22 @@ class _OTPTextFieldState extends State<OTPTextField> {
           filled: true,
         ),
         onChanged: (value) {
-          if (value.isNotEmpty) {
+          if (value.length > 1) {
+            // If pasted text is longer than 1 character
+            final pastedText =
+                value.replaceAll(RegExp(r'[^0-9]'), ''); // Keep only numbers
+            if (pastedText.isNotEmpty) {
+              widget.controller.text = pastedText[0];
+              widget.onChanged(pastedText);
+            }
+          } else {
             widget.onChanged(value);
           }
         },
-        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+        inputFormatters: [
+          FilteringTextInputFormatter.digitsOnly,
+          LengthLimitingTextInputFormatter(6),
+        ],
       ),
     );
   }

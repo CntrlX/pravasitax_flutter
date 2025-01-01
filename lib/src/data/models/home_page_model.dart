@@ -23,9 +23,11 @@ class Service with _$Service {
   const factory Service({
     required String service,
     String? url,
+    String? image,
   }) = _Service;
 
-  factory Service.fromJson(Map<String, dynamic> json) => _$ServiceFromJson(json);
+  factory Service.fromJson(Map<String, dynamic> json) =>
+      _$ServiceFromJson(json);
 }
 
 @freezed
@@ -35,7 +37,8 @@ class Scenario with _$Scenario {
     String? url,
   }) = _Scenario;
 
-  factory Scenario.fromJson(Map<String, dynamic> json) => _$ScenarioFromJson(json);
+  factory Scenario.fromJson(Map<String, dynamic> json) =>
+      _$ScenarioFromJson(json);
 }
 
 @freezed
@@ -56,9 +59,11 @@ class TaxTool with _$TaxTool {
   const factory TaxTool({
     required String title,
     String? url,
+    String? image,
   }) = _TaxTool;
 
-  factory TaxTool.fromJson(Map<String, dynamic> json) => _$TaxToolFromJson(json);
+  factory TaxTool.fromJson(Map<String, dynamic> json) =>
+      _$TaxToolFromJson(json);
 }
 
 @freezed
@@ -93,4 +98,4 @@ class Blog with _$Blog {
   }) = _Blog;
 
   factory Blog.fromJson(Map<String, dynamic> json) => _$BlogFromJson(json);
-} 
+}

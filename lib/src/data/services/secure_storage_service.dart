@@ -9,6 +9,7 @@ class SecureStorageService {
   static const String _tokenKey = 'auth_token';
   static const String _isLoggedInKey = 'is_logged_in';
   static const String _userTypeKey = 'user_type';
+  static const String _userIdKey = 'user_id';
 
   // Save auth token
   static Future<void> saveAuthToken(String token) async {
@@ -28,6 +29,26 @@ class SecureStorageService {
     } catch (e) {
       print('Error saving user type: $e');
       rethrow;
+    }
+  }
+
+  // Save user ID
+  static Future<void> saveUserId(String userId) async {
+    try {
+      await _storage.write(key: _userIdKey, value: userId);
+    } catch (e) {
+      print('Error saving user ID: $e');
+      rethrow;
+    }
+  }
+
+  // Get user ID
+  static Future<String?> getUserId() async {
+    try {
+      return await _storage.read(key: _userIdKey);
+    } catch (e) {
+      print('Error getting user ID: $e');
+      return null;
     }
   }
 
@@ -68,6 +89,7 @@ class SecureStorageService {
       await _storage.delete(key: _tokenKey);
       await _storage.delete(key: _isLoggedInKey);
       await _storage.delete(key: _userTypeKey);
+      await _storage.delete(key: _userIdKey);
     } catch (e) {
       print('Error clearing credentials: $e');
       rethrow;
