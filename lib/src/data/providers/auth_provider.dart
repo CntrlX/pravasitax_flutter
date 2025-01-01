@@ -8,22 +8,26 @@ class AuthState {
   final bool isAuthenticated;
   final String? token;
   final String? error;
+  final String? userType;
 
   AuthState({
     this.isAuthenticated = false,
     this.token,
     this.error,
+    this.userType,
   });
 
   AuthState copyWith({
     bool? isAuthenticated,
     String? token,
     String? error,
+    String? userType,
   }) {
     return AuthState(
       isAuthenticated: isAuthenticated ?? this.isAuthenticated,
       token: token ?? this.token,
       error: error ?? this.error,
+      userType: userType ?? this.userType,
     );
   }
 }
@@ -73,11 +77,14 @@ class AuthNotifier extends StateNotifier<AuthState> {
           name: 'AuthNotifier.verifyOTP');
 
       final token = response['token'] as String;
+      final userType = response['user_type'] as String;
       await SecureStorageService.saveAuthToken(token);
+      await SecureStorageService.saveUserType(userType);
 
       state = state.copyWith(
         isAuthenticated: true,
         token: token,
+        userType: userType,
         error: null,
       );
 

@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pravasitax_flutter/mainpage.dart';
 import 'package:pravasitax_flutter/src/interface/screens/chat_nav/chat_page.dart';
 import 'package:pravasitax_flutter/src/interface/screens/feed_nav/feed_page.dart';
+import 'package:pravasitax_flutter/src/interface/screens/forum_nav/forum_consultant/forum_page.dart';
 import 'package:pravasitax_flutter/src/interface/screens/forum_nav/forum_user/forum_list.dart';
 import 'package:pravasitax_flutter/src/interface/screens/forum_nav/forum_user/forum_page.dart';
 import 'package:pravasitax_flutter/src/interface/screens/i_hub_nav/hub_page.dart';
@@ -35,7 +36,8 @@ class _MainPageConsultantState extends State<MainPageConsultantPage> {
         HomePage(), // Home Page
         FeedPage(), // Feed Page
         HubPage(), // I-Hub Page
-        if (userToken != null) ForumPage(userToken: userToken!), // Forum Page
+        if (userToken != null)
+          ForumPageConsultant(userToken: userToken!), // Forum Page
         ChatPage(), // Chat Page
       ];
     });

@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pravasitax_flutter/src/data/models/forum_model.dart';
 import 'package:pravasitax_flutter/src/data/providers/forum_provider.dart';
 import 'package:pravasitax_flutter/src/interface/widgets/loading_indicator.dart';
-import 'package:pravasitax_flutter/src/interface/screens/forum_nav/forum_user/forum_inside.dart';
+import 'package:pravasitax_flutter/src/interface/screens/forum_nav/forum_consultant/forum_inside.dart';
 
 class ForumList extends ConsumerWidget {
   final ForumCategory category;
@@ -20,6 +20,95 @@ class ForumList extends ConsumerWidget {
       userToken: userToken,
       categoryId: category.id,
     )));
+
+    void _showThreadOptions(ForumThread thread) {
+      showModalBottomSheet(
+        context: context,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        builder: (context) {
+          return Container(
+            padding: EdgeInsets.symmetric(vertical: 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  leading: Icon(Icons.lock_outline, color: Colors.orange),
+                  title: Text('Mark as Closed'),
+                  onTap: () async {
+                    Navigator.pop(context);
+                    try {
+                      await ref.read(markThreadAsClosedProvider((
+                        userToken: userToken,
+                        threadId: thread.id,
+                      )).future);
+
+                      // Refresh the threads list
+                      ref.refresh(forumThreadsProvider((
+                        userToken: userToken,
+                        categoryId: category.id,
+                      )));
+
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Thread marked as closed')),
+                        );
+                      }
+                    } catch (e) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content:
+                                Text('Failed to mark thread as closed: $e'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    }
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.delete_outline, color: Colors.red),
+                  title: Text('Mark as Deleted'),
+                  onTap: () async {
+                    Navigator.pop(context);
+                    try {
+                      await ref.read(markThreadAsDeletedProvider((
+                        userToken: userToken,
+                        threadId: thread.id,
+                      )).future);
+
+                      // Refresh the threads list
+                      ref.refresh(forumThreadsProvider((
+                        userToken: userToken,
+                        categoryId: category.id,
+                      )));
+
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Thread marked as deleted')),
+                        );
+                      }
+                    } catch (e) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content:
+                                Text('Failed to mark thread as deleted: $e'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    }
+                  },
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    }
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -106,113 +195,152 @@ class ForumList extends ConsumerWidget {
                       ),
                     );
                   },
-                  child: Padding(
-                    padding: EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
+                  onLongPress: () => _showThreadOptions(thread),
+                  child: Stack(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            CircleAvatar(
-                              backgroundColor: primaryLightColor,
-                              radius: 20,
-                              child: Text(
-                                (thread.authorName ?? thread.userId)[0]
-                                    .toUpperCase(),
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: primaryColor,
-                                ),
-                              ),
-                            ),
-                            SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    thread.authorName ?? thread.userId,
+                            Row(
+                              children: [
+                                CircleAvatar(
+                                  backgroundColor: primaryLightColor,
+                                  radius: 20,
+                                  child: Text(
+                                    (thread.authorName ?? thread.userId)[0]
+                                        .toUpperCase(),
                                     style: TextStyle(
+                                      fontSize: 16,
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 14,
-                                      color: Colors.black87,
-                                    ),
-                                  ),
-                                  Text(
-                                    _formatTime(thread.createdAt),
-                                    style: TextStyle(
-                                      color: Colors.grey[600],
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 12),
-                        Text(
-                          thread.title,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
-                          ),
-                        ),
-                        SizedBox(height: 8),
-                        Text(
-                          thread.description,
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.black87,
-                            height: 1.5,
-                          ),
-                          maxLines: 3,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        SizedBox(height: 16),
-                        Row(
-                          children: [
-                            Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 6,
-                              ),
-                              decoration: BoxDecoration(
-                                color: primaryLightColor,
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.comment_outlined,
-                                    size: 16,
-                                    color: primaryColor,
-                                  ),
-                                  SizedBox(width: 4),
-                                  Text(
-                                    '${thread.postCount}',
-                                    style: TextStyle(
                                       color: primaryColor,
-                                      fontWeight: FontWeight.w600,
                                     ),
                                   ),
-                                ],
+                                ),
+                                SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        thread.authorName ?? thread.userId,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                          color: Colors.black87,
+                                        ),
+                                      ),
+                                      Text(
+                                        _formatTime(thread.createdAt),
+                                        style: TextStyle(
+                                          color: Colors.grey[600],
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: Icon(Icons.more_vert),
+                                  onPressed: () => _showThreadOptions(thread),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 12),
+                            Text(
+                              thread.title,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
                               ),
                             ),
-                            Spacer(),
+                            SizedBox(height: 8),
                             Text(
-                              'View Thread →',
+                              thread.description,
                               style: TextStyle(
-                                color: primaryColor,
-                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                                color: Colors.black87,
+                                height: 1.5,
                               ),
+                              maxLines: 3,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            SizedBox(height: 16),
+                            Row(
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 6,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: primaryLightColor,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.comment_outlined,
+                                        size: 16,
+                                        color: primaryColor,
+                                      ),
+                                      SizedBox(width: 4),
+                                      Text(
+                                        '${thread.postCount}',
+                                        style: TextStyle(
+                                          color: primaryColor,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                if (thread.status == 2) // Closed status
+                                  Container(
+                                    margin: EdgeInsets.only(left: 8),
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 6,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.orange.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.lock_outline,
+                                          size: 16,
+                                          color: Colors.orange,
+                                        ),
+                                        SizedBox(width: 4),
+                                        Text(
+                                          'Closed',
+                                          style: TextStyle(
+                                            color: Colors.orange,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                Spacer(),
+                                Text(
+                                  'View Thread →',
+                                  style: TextStyle(
+                                    color: primaryColor,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ),

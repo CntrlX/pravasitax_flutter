@@ -159,13 +159,6 @@ class ForumPage extends ConsumerWidget {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Handle create new thread
-        },
-        backgroundColor: primaryColor,
-        child: Icon(Icons.add, color: Colors.white),
-      ),
     );
   }
 }

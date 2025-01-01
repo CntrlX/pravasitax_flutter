@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 
 class ServiceDetailsPage extends StatelessWidget {
-  const ServiceDetailsPage({Key? key}) : super(key: key);
+  final String conversationId;
+
+  const ServiceDetailsPage({
+    Key? key,
+    required this.conversationId,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

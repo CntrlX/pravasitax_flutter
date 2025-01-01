@@ -354,6 +354,70 @@ class ForumAPI {
       throw Exception('Failed to get replies: $e');
     }
   }
+
+  // Create category
+  Future<Map<String, dynamic>> createCategory(
+      String userToken, String category) async {
+    try {
+      final uri = Uri.parse('$baseUrl/forum/categories/create');
+
+      var request = http.MultipartRequest('POST', uri)
+        ..headers.addAll(_getHeaders(userToken))
+        ..fields['category'] = category;
+
+      final response = await http.Response.fromStream(await request.send());
+
+      developer.log('Create category response: ${response.body}',
+          name: 'ForumAPI');
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        if (responseData['response'] == '200') {
+          return responseData['data'];
+        }
+        throw Exception(responseData['message'] ?? 'Failed to create category');
+      }
+      throw Exception('Failed to create category: ${response.statusCode}');
+    } catch (e, stack) {
+      developer.log(
+        'Error creating category',
+        error: e,
+        stackTrace: stack,
+        name: 'ForumAPI',
+      );
+      throw Exception('Failed to create category: $e');
+    }
+  }
+
+  // Delete category
+  Future<void> deleteCategory(String userToken, String categoryId) async {
+    try {
+      final uri = Uri.parse('$baseUrl/forum/categories/delete');
+
+      var request = http.MultipartRequest('POST', uri)
+        ..headers.addAll(_getHeaders(userToken))
+        ..fields['id'] = categoryId;
+
+      final response = await http.Response.fromStream(await request.send());
+
+      if (response.statusCode != 200) {
+        throw Exception('Failed to delete category: ${response.statusCode}');
+      }
+
+      final responseData = json.decode(response.body);
+      if (responseData['response'] != '200') {
+        throw Exception(responseData['message'] ?? 'Failed to delete category');
+      }
+    } catch (e, stack) {
+      developer.log(
+        'Error deleting category',
+        error: e,
+        stackTrace: stack,
+        name: 'ForumAPI',
+      );
+      throw Exception('Failed to delete category: $e');
+    }
+  }
 }
 
 final forumAPIProvider = Provider<ForumAPI>((ref) {

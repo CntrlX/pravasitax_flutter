@@ -397,11 +397,18 @@ class _LoginFrontPageState extends ConsumerState<LoginFrontPage> {
       }
 
       if (authState.isAuthenticated) {
-        developer.log('Authentication successful, navigating to home',
+        developer.log(
+            'Authentication successful, navigating based on user type',
             name: 'LoginFrontPage._verifyOTP');
         if (mounted) {
           Navigator.of(context).pop(); // Pop OTP dialog
-          Navigator.of(context).pushReplacementNamed('/home');
+
+          // Navigate based on user type
+          if (authState.userType == 'staff') {
+            Navigator.of(context).pushReplacementNamed('/home_consultant');
+          } else {
+            Navigator.of(context).pushReplacementNamed('/home');
+          }
         }
       } else {
         developer.log('Authentication failed: Invalid OTP',

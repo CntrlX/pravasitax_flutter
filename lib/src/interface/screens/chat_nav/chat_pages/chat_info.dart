@@ -3,6 +3,17 @@ import 'package:pravasitax_flutter/src/interface/screens/chat_nav/chat_pages/cha
 import 'package:pravasitax_flutter/src/interface/screens/chat_nav/chat_pages/chat_info/services_page.dart';
 
 class ChatInfo extends StatelessWidget {
+  final String conversationId;
+  final String title;
+  final String imageUrl;
+
+  const ChatInfo({
+    Key? key,
+    required this.conversationId,
+    required this.title,
+    required this.imageUrl,
+  }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -10,8 +21,7 @@ class ChatInfo extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,
-
-          titleSpacing: 0, // Reduce spacing to align with leading
+          titleSpacing: 0,
           title: Row(
             children: [
               IconButton(
@@ -19,25 +29,15 @@ class ChatInfo extends StatelessWidget {
                 onPressed: () => Navigator.pop(context),
               ),
               CircleAvatar(
-                backgroundImage: NetworkImage(''),
+                backgroundImage: NetworkImage(imageUrl),
               ),
               const SizedBox(width: 8),
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ChatInfo(),
-                    ),
-                  );
-                },
-                child: Expanded(
-                  child: Text(
-                    'ASFDVAV',
-                    style: const TextStyle(
-                      fontSize: 18,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+              Expanded(
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ),
@@ -49,7 +49,6 @@ class ChatInfo extends StatelessWidget {
               onPressed: () {},
             ),
           ],
-
           bottom: TabBar(
             indicatorSize: TabBarIndicatorSize.tab,
             indicator: BoxDecoration(
@@ -71,8 +70,8 @@ class ChatInfo extends StatelessWidget {
         ),
         body: TabBarView(
           children: [
-            ServiceDetailsPage(),
-            ChatDocumentsPage(),
+            ServiceDetailsPage(conversationId: conversationId),
+            ChatDocumentsPage(conversationId: conversationId),
           ],
         ),
       ),
