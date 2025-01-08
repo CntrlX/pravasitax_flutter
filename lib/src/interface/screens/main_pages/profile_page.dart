@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pravasitax_flutter/src/data/providers/auth_provider.dart';
+import 'package:pravasitax_flutter/src/data/providers/customer_provider.dart';
 import 'package:pravasitax_flutter/src/interface/screens/menu_pages/documents.dart';
 import 'package:pravasitax_flutter/src/interface/screens/menu_pages/help_center.dart';
 import 'package:pravasitax_flutter/src/interface/screens/menu_pages/my_filings.dart';
@@ -12,10 +13,18 @@ import 'package:pravasitax_flutter/src/interface/screens/menu_pages/subscription
 import 'package:pravasitax_flutter/src/interface/screens/menu_pages/termsandconditions.dart';
 import 'package:pravasitax_flutter/src/interface/screens/menu_pages/notification_setting.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pravasitax_flutter/src/data/models/customer_model.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends ConsumerWidget {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authProvider);
+    final customerDetails = ref
+        .watch(
+          customerDetailsProvider(authState.token ?? ''),
+        )
+        .whenData((data) => data as Customer);
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -31,294 +40,305 @@ class ProfilePage extends StatelessWidget {
           },
         ),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Profile Header Section
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(50),
-                    child: Image.network(
-                      'https://invalid-url.com', // Invalid URL for testing
-                      height: 70,
-                      width: 70,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          width: 70,
-                          height: 70,
-                          color: Colors.grey,
-                          child: const Icon(Icons.person, color: Colors.white),
-                        );
-                      },
+      body: customerDetails.when(
+        data: (customer) => SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Profile Header Section
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(50),
+                      child: Container(
+                        width: 70,
+                        height: 70,
+                        color: Colors.grey,
+                        child: const Icon(Icons.person, color: Colors.white),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 16),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text(
-                        'Ramakrishna Panikar',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                    const SizedBox(width: 16),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          customer.name,
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        '984575223',
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                    ],
-                  ),
-                  const Spacer(),
-                  TextButton(
-                    onPressed: () {
-                      // Display the modal bottom sheet directly on 'Edit' button press
-                      showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.vertical(top: Radius.circular(16)),
+                        SizedBox(height: 4),
+                        Text(
+                          customer?.mobile ?? customer?.email ?? 'No Contact',
+                          style: TextStyle(color: Colors.grey),
                         ),
-                        builder: (BuildContext context) {
-                          return Padding(
-                            padding: EdgeInsets.only(
-                              left: 16,
-                              right: 16,
-                              top: 16,
-                              bottom: MediaQuery.of(context).viewInsets.bottom,
-                            ),
-                            child: Wrap(
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    // Close Icon at the top-right corner
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        IconButton(
-                                          icon: const Icon(Icons.close,
-                                              color: Colors.black),
-                                          onPressed: () {
-                                            Navigator.of(context)
-                                                .pop(); // Close the bottom sheet
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                    Center(
-                                      child: CircleAvatar(
-                                        radius: 70,
-                                        backgroundImage: NetworkImage(
-                                          'https://example.com/profile_picture.jpg',
-                                        ),
+                        if (customer?.residingCountry != null) ...[
+                          SizedBox(height: 4),
+                          Text(
+                            customer!.residingCountry!,
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                        ],
+                      ],
+                    ),
+                    const Spacer(),
+                    TextButton(
+                      onPressed: () {
+                        // Display the modal bottom sheet directly on 'Edit' button press
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.vertical(top: Radius.circular(16)),
+                          ),
+                          builder: (BuildContext context) {
+                            return Padding(
+                              padding: EdgeInsets.only(
+                                left: 16,
+                                right: 16,
+                                top: 16,
+                                bottom:
+                                    MediaQuery.of(context).viewInsets.bottom,
+                              ),
+                              child: Wrap(
+                                children: [
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      // Close Icon at the top-right corner
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          IconButton(
+                                            icon: const Icon(Icons.close,
+                                                color: Colors.black),
+                                            onPressed: () {
+                                              Navigator.of(context)
+                                                  .pop(); // Close the bottom sheet
+                                            },
+                                          ),
+                                        ],
                                       ),
-                                    ),
-                                    const SizedBox(height: 16),
-                                    const TextField(
-                                      decoration: InputDecoration(
-                                        labelText: "Name",
-                                        border: OutlineInputBorder(),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 16),
-                                    const TextField(
-                                      decoration: InputDecoration(
-                                        labelText: "Phone Number",
-                                        border: OutlineInputBorder(),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 16),
-                                    const TextField(
-                                      decoration: InputDecoration(
-                                        labelText: "Email ID",
-                                        border: OutlineInputBorder(),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 16),
-                                    const TextField(
-                                      decoration: InputDecoration(
-                                        labelText: "DOB",
-                                        border: OutlineInputBorder(),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 16),
-                                    Center(
-                                      child: ElevatedButton(
-                                        onPressed: () {},
-                                        child: const Text(
-                                          "Proceed",
-                                          style: TextStyle(color: Colors.black),
-                                        ),
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor:
-                                              const Color(0xFFF9B406),
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 185, vertical: 18),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(8),
+                                      Center(
+                                        child: CircleAvatar(
+                                          radius: 70,
+                                          backgroundImage: NetworkImage(
+                                            'https://example.com/profile_picture.jpg',
                                           ),
                                         ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      );
-                    },
-                    child: const Text(
-                      'Edit',
-                      style: TextStyle(color: Colors.red),
+                                      const SizedBox(height: 16),
+                                      const TextField(
+                                        decoration: InputDecoration(
+                                          labelText: "Name",
+                                          border: OutlineInputBorder(),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 16),
+                                      const TextField(
+                                        decoration: InputDecoration(
+                                          labelText: "Phone Number",
+                                          border: OutlineInputBorder(),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 16),
+                                      const TextField(
+                                        decoration: InputDecoration(
+                                          labelText: "Email ID",
+                                          border: OutlineInputBorder(),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 16),
+                                      const TextField(
+                                        decoration: InputDecoration(
+                                          labelText: "DOB",
+                                          border: OutlineInputBorder(),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 16),
+                                      Center(
+                                        child: ElevatedButton(
+                                          onPressed: () {},
+                                          child: const Text(
+                                            "Proceed",
+                                            style:
+                                                TextStyle(color: Colors.black),
+                                          ),
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor:
+                                                const Color(0xFFF9B406),
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 185, vertical: 18),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        );
+                      },
+                      child: const Text(
+                        'Edit',
+                        style: TextStyle(color: Colors.red),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            _buildSectionHeader('ACCOUNT'),
+              _buildSectionHeader('ACCOUNT'),
 
-            _buildListTile(
-              context,
-              Icons.help_outline,
-              'Help Center',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => HelpCenterPage()),
-                );
-              },
-            ),
-            Container(color: Color(0xFFD9D9D9), height: 1),
-            _buildListTile(
-              context,
-              Icons.rule,
-              'My Filings',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => MyFilingsPage()),
-                );
-              },
-            ),
-            Container(color: Color(0xFFD9D9D9), height: 1),
-            _buildListTile(
-              context,
-              Icons.rule,
-              'About Us',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => AboutPage()),
-                );
-              },
-            ),
-            Container(color: Color(0xFFD9D9D9), height: 1),
-            _buildListTile(
-              context,
-              Icons.file_present_outlined,
-              'Documents',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => DocumentsPage()),
-                );
-              },
-            ),
-            Container(color: Color(0xFFD9D9D9), height: 1),
-            _buildListTile(
-              context,
-              Icons.subscriptions_outlined,
-              'Subscriptions',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => SubscriptionsPage()),
-                );
-              },
-            ),
-            Container(color: Color(0xFFD9D9D9), height: 1),
-            _buildListTile(
-              context,
-              Icons.post_add_outlined,
-              'My Posts',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => MyPostsPage()),
-                );
-              },
-            ),
-            Container(color: Color(0xFFD9D9D9), height: 1),
-            _buildListTile(
-              context,
-              Icons.rule,
-              'Privacy Policy',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => PrivacyPolicyPage()),
-                );
-              },
-            ),
-            Container(color: Color(0xFFD9D9D9), height: 1),
-            _buildListTile(
-              context,
-              Icons.save_alt_outlined,
-              'Saved News',
-              onTap: () => Navigator.push(
+              _buildListTile(
                 context,
-                MaterialPageRoute(builder: (context) => SavedNewsPage()),
-              ),
-            ),
-            Container(color: Color(0xFFD9D9D9), height: 1),
-            _buildListTile(
-              context,
-              Icons.rule,
-              'Terms and Conditions',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => TermsAndConditionsPage()),
-                );
-              },
-            ),
-            Container(color: Color(0xFFD9D9D9), height: 1),
-            _buildListTile(
-              context,
-              Icons.rule_outlined,
-              'Notification Settings',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => NotificationSettingsPage()),
-                );
-              },
-            ),
-            Container(color: Color(0xFFF2F2F2), height: 15),
-            _buildListTile(context, Icons.logout, 'Logout', onTap: () {
-              _showLogoutDialog(context);
-            }),
-            Container(color: Color(0xFFF2F2F2), height: 15),
-            _buildListTile(context, Icons.delete_forever, 'Delete Account',
+                Icons.help_outline,
+                'Help Center',
                 onTap: () {
-              _showDeleteAccountDialog(context);
-            }),
-            Container(color: Color(0xFFF2F2F2), height: 100),
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => HelpCenterPage()),
+                  );
+                },
+              ),
+              Container(color: Color(0xFFD9D9D9), height: 1),
+              _buildListTile(
+                context,
+                Icons.rule,
+                'My Filings',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => MyFilingsPage()),
+                  );
+                },
+              ),
+              Container(color: Color(0xFFD9D9D9), height: 1),
+              _buildListTile(
+                context,
+                Icons.rule,
+                'About Us',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => AboutPage()),
+                  );
+                },
+              ),
+              Container(color: Color(0xFFD9D9D9), height: 1),
+              _buildListTile(
+                context,
+                Icons.file_present_outlined,
+                'Documents',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => DocumentsPage()),
+                  );
+                },
+              ),
+              Container(color: Color(0xFFD9D9D9), height: 1),
+              _buildListTile(
+                context,
+                Icons.subscriptions_outlined,
+                'Subscriptions',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => SubscriptionsPage()),
+                  );
+                },
+              ),
+              Container(color: Color(0xFFD9D9D9), height: 1),
+              _buildListTile(
+                context,
+                Icons.post_add_outlined,
+                'My Posts',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => MyPostsPage()),
+                  );
+                },
+              ),
+              Container(color: Color(0xFFD9D9D9), height: 1),
+              _buildListTile(
+                context,
+                Icons.rule,
+                'Privacy Policy',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => PrivacyPolicyPage()),
+                  );
+                },
+              ),
+              Container(color: Color(0xFFD9D9D9), height: 1),
+              _buildListTile(
+                context,
+                Icons.save_alt_outlined,
+                'Saved News',
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SavedNewsPage()),
+                ),
+              ),
+              Container(color: Color(0xFFD9D9D9), height: 1),
+              _buildListTile(
+                context,
+                Icons.rule,
+                'Terms and Conditions',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => TermsAndConditionsPage()),
+                  );
+                },
+              ),
+              Container(color: Color(0xFFD9D9D9), height: 1),
+              _buildListTile(
+                context,
+                Icons.rule_outlined,
+                'Notification Settings',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => NotificationSettingsPage()),
+                  );
+                },
+              ),
+              Container(color: Color(0xFFF2F2F2), height: 15),
+              _buildListTile(context, Icons.logout, 'Logout', onTap: () {
+                _showLogoutDialog(context);
+              }),
+              Container(color: Color(0xFFF2F2F2), height: 15),
+              _buildListTile(context, Icons.delete_forever, 'Delete Account',
+                  onTap: () {
+                _showDeleteAccountDialog(context);
+              }),
+              Container(color: Color(0xFFF2F2F2), height: 100),
 
-            const SizedBox(height: 20),
-          ],
+              const SizedBox(height: 20),
+            ],
+          ),
+        ),
+        loading: () => Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(
+          child: Text('Error loading profile: $error'),
         ),
       ),
     );

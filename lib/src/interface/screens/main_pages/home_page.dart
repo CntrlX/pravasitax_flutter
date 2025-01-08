@@ -237,28 +237,46 @@ class _HomePageState extends ConsumerState<HomePage> {
               const SizedBox(height: 24),
 
               // Service Cards
-              GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                  childAspectRatio: 1.5,
+              SizedBox(
+                height: MediaQuery.of(context).size.width * 0.6,
+                child: PageView.builder(
+                  itemCount: (data.serviceList.length / 4).ceil(),
+                  itemBuilder: (context, pageIndex) {
+                    final startIndex = pageIndex * 4;
+                    final endIndex =
+                        (startIndex + 4).clamp(0, data.serviceList.length);
+                    final pageServices =
+                        data.serviceList.sublist(startIndex, endIndex);
+
+                    return GridView.builder(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        childAspectRatio: 1.6,
+                        crossAxisSpacing: 16,
+                        mainAxisSpacing: 16,
+                      ),
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: pageServices.length,
+                      padding: const EdgeInsets.all(8),
+                      itemBuilder: (context, index) {
+                        final service = pageServices[index];
+                        developer.log(
+                            'Service ${service.service} image: ${service.image}',
+                            name: 'HomePage');
+                        return _buildServiceCard(
+                          title: service.service,
+                          imageUrl: service.image,
+                          color: const Color(0xFFDCDCDC),
+                          textColor: const Color(0xFF003366),
+                          onTap: service.url != null
+                              ? () => _launchUrl(service.url!)
+                              : null,
+                        );
+                      },
+                    );
+                  },
                 ),
-                itemCount: data.serviceList.length.clamp(0, 4),
-                itemBuilder: (context, index) {
-                  final service = data.serviceList[index];
-                  return _buildServiceCard(
-                    title: service.service,
-                    iconPath: _getIconPathForService(service.service),
-                    color: const Color(0xFFDCDCDC),
-                    textColor: const Color(0xFF003366),
-                    onTap: service.url != null
-                        ? () => _launchUrl(service.url!)
-                        : null,
-                  );
-                },
               ),
               const SizedBox(height: 24),
 
@@ -436,6 +454,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                             context: context,
                             icon: Icons.calculate,
                             title: '',
+                            imageUrl: tool.image,
                             color: const Color(0xFFFFF3F3),
                             onTap: tool.url != null
                                 ? () => _launchUrl(tool.url!)
@@ -478,7 +497,7 @@ class _HomePageState extends ConsumerState<HomePage> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => ChatScreen()),
+            MaterialPageRoute(builder: (context) => ChatPage()),
           );
         },
         backgroundColor: const Color(0xFF040F4F),
@@ -489,17 +508,16 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   Widget _buildServiceCard({
     required String title,
-    required String iconPath,
+    String? imageUrl,
     required Color color,
     required Color textColor,
     VoidCallback? onTap,
   }) {
+    developer.log('Building service card: $title with image: $imageUrl',
+        name: 'ServiceCard');
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 160,
-        height: 100,
-        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: color,
           borderRadius: BorderRadius.circular(12),
@@ -512,33 +530,67 @@ class _HomePageState extends ConsumerState<HomePage> {
           ],
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SvgPicture.asset(
-              iconPath,
-              width: 36,
-              height: 36,
-              placeholderBuilder: (context) => SizedBox(
-                width: 36,
-                height: 36,
-                child: Center(
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(textColor),
+            if (imageUrl != null && imageUrl.isNotEmpty)
+              Expanded(
+                flex: 4, // Increased flex from 3 to 4 to make card taller
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 16),
+                  child: CachedNetworkImage(
+                    imageUrl: imageUrl,
+                    width: 48,
+                    height: 48,
+                    fit: BoxFit.contain,
+                    placeholder: (context, url) => const Center(
+                      child: SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                        ),
+                      ),
+                    ),
+                    errorWidget: (context, url, error) {
+                      developer.log('Error loading image for $title: $error',
+                          name: 'ServiceCard');
+                      return Icon(
+                        Icons.business_center,
+                        size: 48,
+                        color: textColor,
+                      );
+                    },
+                  ),
+                ),
+              )
+            else
+              Expanded(
+                flex: 4, // Increased flex from 3 to 4 to make card taller
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 16),
+                  child: Icon(
+                    Icons.business_center,
+                    size: 48,
+                    color: textColor,
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              title,
-              style: TextStyle(
-                color: textColor,
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
+            Expanded(
+              flex: 2,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    color: textColor,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-              textAlign: TextAlign.center,
             ),
           ],
         ),
@@ -551,6 +603,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     required IconData icon,
     required String title,
     required Color color,
+    String? imageUrl,
     VoidCallback? onTap,
   }) {
     return GestureDetector(
@@ -572,7 +625,28 @@ class _HomePageState extends ConsumerState<HomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 36, color: Colors.black54), // Placeholder icon
+            if (imageUrl != null)
+              CachedNetworkImage(
+                imageUrl: imageUrl,
+                width: 36,
+                height: 36,
+                placeholder: (context, url) => const SizedBox(
+                  width: 36,
+                  height: 36,
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                    ),
+                  ),
+                ),
+                errorWidget: (context, url, error) => Icon(
+                  icon,
+                  size: 36,
+                  color: Colors.black54,
+                ),
+              )
+            else
+              Icon(icon, size: 36, color: Colors.black54),
             const SizedBox(height: 8),
             Text(
               title,

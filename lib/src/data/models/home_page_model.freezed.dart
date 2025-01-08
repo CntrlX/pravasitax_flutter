@@ -324,6 +324,7 @@ Service _$ServiceFromJson(Map<String, dynamic> json) {
 mixin _$Service {
   String get service => throw _privateConstructorUsedError;
   String? get url => throw _privateConstructorUsedError;
+  String? get image => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -335,7 +336,7 @@ abstract class $ServiceCopyWith<$Res> {
   factory $ServiceCopyWith(Service value, $Res Function(Service) then) =
       _$ServiceCopyWithImpl<$Res, Service>;
   @useResult
-  $Res call({String service, String? url});
+  $Res call({String service, String? url, String? image});
 }
 
 /// @nodoc
@@ -353,6 +354,7 @@ class _$ServiceCopyWithImpl<$Res, $Val extends Service>
   $Res call({
     Object? service = null,
     Object? url = freezed,
+    Object? image = freezed,
   }) {
     return _then(_value.copyWith(
       service: null == service
@@ -362,6 +364,10 @@ class _$ServiceCopyWithImpl<$Res, $Val extends Service>
       url: freezed == url
           ? _value.url
           : url // ignore: cast_nullable_to_non_nullable
+              as String?,
+      image: freezed == image
+          ? _value.image
+          : image // ignore: cast_nullable_to_non_nullable
               as String?,
     ) as $Val);
   }
@@ -374,7 +380,7 @@ abstract class _$$ServiceImplCopyWith<$Res> implements $ServiceCopyWith<$Res> {
       __$$ServiceImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String service, String? url});
+  $Res call({String service, String? url, String? image});
 }
 
 /// @nodoc
@@ -390,6 +396,7 @@ class __$$ServiceImplCopyWithImpl<$Res>
   $Res call({
     Object? service = null,
     Object? url = freezed,
+    Object? image = freezed,
   }) {
     return _then(_$ServiceImpl(
       service: null == service
@@ -400,6 +407,10 @@ class __$$ServiceImplCopyWithImpl<$Res>
           ? _value.url
           : url // ignore: cast_nullable_to_non_nullable
               as String?,
+      image: freezed == image
+          ? _value.image
+          : image // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -407,7 +418,7 @@ class __$$ServiceImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$ServiceImpl implements _Service {
-  const _$ServiceImpl({required this.service, this.url});
+  const _$ServiceImpl({required this.service, this.url, this.image});
 
   factory _$ServiceImpl.fromJson(Map<String, dynamic> json) =>
       _$$ServiceImplFromJson(json);
@@ -416,10 +427,12 @@ class _$ServiceImpl implements _Service {
   final String service;
   @override
   final String? url;
+  @override
+  final String? image;
 
   @override
   String toString() {
-    return 'Service(service: $service, url: $url)';
+    return 'Service(service: $service, url: $url, image: $image)';
   }
 
   @override
@@ -428,12 +441,13 @@ class _$ServiceImpl implements _Service {
         (other.runtimeType == runtimeType &&
             other is _$ServiceImpl &&
             (identical(other.service, service) || other.service == service) &&
-            (identical(other.url, url) || other.url == url));
+            (identical(other.url, url) || other.url == url) &&
+            (identical(other.image, image) || other.image == image));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, service, url);
+  int get hashCode => Object.hash(runtimeType, service, url, image);
 
   @JsonKey(ignore: true)
   @override
@@ -450,8 +464,10 @@ class _$ServiceImpl implements _Service {
 }
 
 abstract class _Service implements Service {
-  const factory _Service({required final String service, final String? url}) =
-      _$ServiceImpl;
+  const factory _Service(
+      {required final String service,
+      final String? url,
+      final String? image}) = _$ServiceImpl;
 
   factory _Service.fromJson(Map<String, dynamic> json) = _$ServiceImpl.fromJson;
 
@@ -459,6 +475,8 @@ abstract class _Service implements Service {
   String get service;
   @override
   String? get url;
+  @override
+  String? get image;
   @override
   @JsonKey(ignore: true)
   _$$ServiceImplCopyWith<_$ServiceImpl> get copyWith =>
@@ -835,6 +853,7 @@ TaxTool _$TaxToolFromJson(Map<String, dynamic> json) {
 mixin _$TaxTool {
   String get title => throw _privateConstructorUsedError;
   String? get url => throw _privateConstructorUsedError;
+  String? get image => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -846,7 +865,7 @@ abstract class $TaxToolCopyWith<$Res> {
   factory $TaxToolCopyWith(TaxTool value, $Res Function(TaxTool) then) =
       _$TaxToolCopyWithImpl<$Res, TaxTool>;
   @useResult
-  $Res call({String title, String? url});
+  $Res call({String title, String? url, String? image});
 }
 
 /// @nodoc
@@ -864,6 +883,7 @@ class _$TaxToolCopyWithImpl<$Res, $Val extends TaxTool>
   $Res call({
     Object? title = null,
     Object? url = freezed,
+    Object? image = freezed,
   }) {
     return _then(_value.copyWith(
       title: null == title
@@ -873,6 +893,10 @@ class _$TaxToolCopyWithImpl<$Res, $Val extends TaxTool>
       url: freezed == url
           ? _value.url
           : url // ignore: cast_nullable_to_non_nullable
+              as String?,
+      image: freezed == image
+          ? _value.image
+          : image // ignore: cast_nullable_to_non_nullable
               as String?,
     ) as $Val);
   }
@@ -885,7 +909,7 @@ abstract class _$$TaxToolImplCopyWith<$Res> implements $TaxToolCopyWith<$Res> {
       __$$TaxToolImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String title, String? url});
+  $Res call({String title, String? url, String? image});
 }
 
 /// @nodoc
@@ -901,6 +925,7 @@ class __$$TaxToolImplCopyWithImpl<$Res>
   $Res call({
     Object? title = null,
     Object? url = freezed,
+    Object? image = freezed,
   }) {
     return _then(_$TaxToolImpl(
       title: null == title
@@ -911,6 +936,10 @@ class __$$TaxToolImplCopyWithImpl<$Res>
           ? _value.url
           : url // ignore: cast_nullable_to_non_nullable
               as String?,
+      image: freezed == image
+          ? _value.image
+          : image // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -918,7 +947,7 @@ class __$$TaxToolImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$TaxToolImpl implements _TaxTool {
-  const _$TaxToolImpl({required this.title, this.url});
+  const _$TaxToolImpl({required this.title, this.url, this.image});
 
   factory _$TaxToolImpl.fromJson(Map<String, dynamic> json) =>
       _$$TaxToolImplFromJson(json);
@@ -927,10 +956,12 @@ class _$TaxToolImpl implements _TaxTool {
   final String title;
   @override
   final String? url;
+  @override
+  final String? image;
 
   @override
   String toString() {
-    return 'TaxTool(title: $title, url: $url)';
+    return 'TaxTool(title: $title, url: $url, image: $image)';
   }
 
   @override
@@ -939,12 +970,13 @@ class _$TaxToolImpl implements _TaxTool {
         (other.runtimeType == runtimeType &&
             other is _$TaxToolImpl &&
             (identical(other.title, title) || other.title == title) &&
-            (identical(other.url, url) || other.url == url));
+            (identical(other.url, url) || other.url == url) &&
+            (identical(other.image, image) || other.image == image));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, title, url);
+  int get hashCode => Object.hash(runtimeType, title, url, image);
 
   @JsonKey(ignore: true)
   @override
@@ -961,8 +993,10 @@ class _$TaxToolImpl implements _TaxTool {
 }
 
 abstract class _TaxTool implements TaxTool {
-  const factory _TaxTool({required final String title, final String? url}) =
-      _$TaxToolImpl;
+  const factory _TaxTool(
+      {required final String title,
+      final String? url,
+      final String? image}) = _$TaxToolImpl;
 
   factory _TaxTool.fromJson(Map<String, dynamic> json) = _$TaxToolImpl.fromJson;
 
@@ -970,6 +1004,8 @@ abstract class _TaxTool implements TaxTool {
   String get title;
   @override
   String? get url;
+  @override
+  String? get image;
   @override
   @JsonKey(ignore: true)
   _$$TaxToolImplCopyWith<_$TaxToolImpl> get copyWith =>

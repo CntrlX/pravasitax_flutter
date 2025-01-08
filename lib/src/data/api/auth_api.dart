@@ -116,32 +116,8 @@ class AuthAPI {
       );
 
       if (responseData['response'] == '200') {
-        final token = responseData['data'] as String;
-
-        // Log JWT parsing
-        developer.log(
-          'Parsing JWT token',
-          name: 'AuthAPI.verifyOTP',
-        );
-
-        final parts = token.split('.');
-        Map<String, dynamic> payload = {};
-
-        if (parts.length == 3) {
-          final payloadJson =
-              utf8.decode(base64Url.decode(base64Url.normalize(parts[1])));
-          payload = json.decode(payloadJson) as Map<String, dynamic>;
-
-          developer.log(
-            'JWT payload decoded: $payload',
-            name: 'AuthAPI.verifyOTP',
-          );
-        }
-
-        return {
-          'token': token,
-          'user': payload,
-        };
+        final data = responseData['data'] as Map<String, dynamic>;
+        return data;
       }
 
       throw Exception(responseData['message'] ?? 'Invalid OTP');

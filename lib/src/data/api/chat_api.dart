@@ -35,7 +35,19 @@ class ChatAPI {
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         if (responseData['response'] == '200') {
-          return responseData['data'];
+          return {
+            '_id': responseData['data'],
+            'title': title,
+            'type': type,
+            'staffs': [],
+            'customer': userToken,
+            'created_at': DateTime.now().toString(),
+            'status': 1,
+            'status_text': 'active',
+            'unread_messages': 0,
+            'total_messages': 0,
+            'last_message': ''
+          };
         }
         throw Exception(
             responseData['message'] ?? 'Failed to create conversation');
@@ -55,6 +67,9 @@ class ChatAPI {
   Future<List<Map<String, dynamic>>> getConversations(String userToken) async {
     try {
       final uri = Uri.parse('$baseUrl/chat/conversations/get');
+      developer.log('User token: $userToken', name: 'ChatAPI');
+      developer.log('Request URL: $uri', name: 'ChatAPI');
+      developer.log('Headers: ${_getHeaders(userToken)}', name: 'ChatAPI');
 
       final response = await _client.get(uri, headers: _getHeaders(userToken));
 
@@ -152,12 +167,18 @@ class ChatAPI {
     try {
       final uri = Uri.parse('$baseUrl/chat/messages/send');
 
+      developer.log('Sending message to conversation: $conversationId',
+          name: 'ChatAPI');
+      developer.log('Message content: $message', name: 'ChatAPI');
+
       var request = http.MultipartRequest('POST', uri)
         ..headers.addAll(_getHeaders(userToken))
         ..fields['conversation_id'] = conversationId
         ..fields['message'] = message;
 
       final response = await http.Response.fromStream(await request.send());
+
+      developer.log('Send message response: ${response.body}', name: 'ChatAPI');
 
       if (response.statusCode != 200) {
         throw Exception('Failed to send message: ${response.statusCode}');
@@ -185,12 +206,36 @@ class ChatAPI {
         queryParameters: {'conversation_id': conversationId},
       );
 
+      developer.log('Getting messages for conversation: $conversationId',
+          name: 'ChatAPI');
+      developer.log('Request URL: $uri', name: 'ChatAPI');
+
       final response = await _client.get(uri, headers: _getHeaders(userToken));
+
+      developer.log('Get messages raw response: ${response.body}',
+          name: 'ChatAPI');
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         if (responseData['response'] == '200') {
-          return List<Map<String, dynamic>>.from(responseData['data']);
+          final messages =
+              List<Map<String, dynamic>>.from(responseData['data']);
+          developer.log('Raw message data: $messages', name: 'ChatAPI');
+          // Log each message's fields
+          for (var msg in messages) {
+            developer.log('Message fields: ${msg.keys.join(", ")}',
+                name: 'ChatAPI');
+            developer.log(
+                'Message content: ${msg["message"] ?? msg["content"]}',
+                name: 'ChatAPI');
+          }
+          // Convert message field to content if needed
+          return messages
+              .map((msg) => {
+                    ...msg,
+                    'content': msg['message'] ?? msg['content'] ?? '',
+                  })
+              .toList();
         }
         throw Exception(responseData['message'] ?? 'Failed to get messages');
       }

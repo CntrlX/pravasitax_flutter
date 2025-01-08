@@ -91,3 +91,16 @@ final markThreadAsDeletedProvider =
   final api = ref.watch(forumAPIProvider);
   await api.markThreadAsDeleted(params.userToken, params.threadId);
 });
+
+final createCategoryProvider = FutureProvider.family<Map<String, dynamic>,
+    ({String userToken, String category})>((ref, params) async {
+  final api = ref.watch(forumAPIProvider);
+  return await api.createCategory(params.userToken, params.category);
+});
+
+final deleteCategoryProvider =
+    FutureProvider.family<void, ({String userToken, String categoryId})>(
+        (ref, params) async {
+  final api = ref.watch(forumAPIProvider);
+  await api.deleteCategory(params.userToken, params.categoryId);
+});
