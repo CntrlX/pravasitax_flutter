@@ -1,4 +1,4 @@
-package com.example.pravasitax_flutter
+package com.capitaire.pravasitax
 
 import io.flutter.embedding.android.FlutterActivity
 

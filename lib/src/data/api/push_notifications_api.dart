@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -15,6 +17,7 @@ class PushNotificationsAPI {
       };
 
   Future<void> registerFCMToken(String userId, String fcmToken) async {
+    log('userId:$userId\n fcm:$fcmToken');
     try {
       final uri = Uri.parse('$baseUrl/register-fcm-token');
 
