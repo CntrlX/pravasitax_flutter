@@ -17,24 +17,6 @@ class ForumPage extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: Text(
-          'Forum',
-          style: TextStyle(
-            color: Colors.black87,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.search, color: Colors.black87),
-            onPressed: () {},
-          ),
-        ],
-      ),
       body: Consumer(
         builder: (context, ref, child) {
           final categoriesAsync = ref.watch(forumCategoriesProvider(userToken));

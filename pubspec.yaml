@@ -48,6 +48,8 @@ dependencies:
   flutter_secure_storage: ^8.0.0
   flutter_html: ^3.0.0-beta.2
   intl: ^0.18.0
+  video_player: ^2.8.2
+  image_picker: ^1.0.7
 
 
 

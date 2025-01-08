@@ -10,6 +10,7 @@ class AuthState {
   final String? error;
   final String? userType;
   final String? userId;
+  final bool isNewUser;
 
   AuthState({
     this.isAuthenticated = false,
@@ -17,6 +18,7 @@ class AuthState {
     this.error,
     this.userType,
     this.userId,
+    this.isNewUser = false,
   });
 
   AuthState copyWith({
@@ -25,6 +27,7 @@ class AuthState {
     String? error,
     String? userType,
     String? userId,
+    bool? isNewUser,
   }) {
     return AuthState(
       isAuthenticated: isAuthenticated ?? this.isAuthenticated,
@@ -32,6 +35,7 @@ class AuthState {
       error: error ?? this.error,
       userType: userType ?? this.userType,
       userId: userId ?? this.userId,
+      isNewUser: isNewUser ?? this.isNewUser,
     );
   }
 }
@@ -83,6 +87,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       final token = response['token'] as String;
       final userType = response['user_type'] as String;
       final userId = response['user_id'] as String;
+      final isNewUser = response['new_user'] as bool;
 
       await SecureStorageService.saveAuthToken(token);
       await SecureStorageService.saveUserType(userType);
@@ -93,6 +98,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         token: token,
         userType: userType,
         userId: userId,
+        isNewUser: isNewUser,
         error: null,
       );
 
