@@ -52,6 +52,7 @@ class ForumThread {
   final int status;
   final String statusText;
   final int postCount;
+  final String? image;
 
   ForumThread({
     required this.id,
@@ -64,6 +65,7 @@ class ForumThread {
     required this.status,
     required this.statusText,
     this.postCount = 0,
+    this.image,
   });
 
   factory ForumThread.fromJson(Map<String, dynamic> json) {
@@ -80,6 +82,7 @@ class ForumThread {
         status: json['status'] is int ? json['status'] : 0,
         statusText: json['status_text']?.toString() ?? '',
         postCount: json['post_count'] is int ? json['post_count'] : 0,
+        image: json['image']?.toString(),
       );
     } catch (e, stack) {
       developer.log('Error parsing thread: $e\n$stack', name: 'ForumModel');

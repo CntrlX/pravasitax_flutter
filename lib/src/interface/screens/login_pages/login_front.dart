@@ -419,64 +419,39 @@ class _LoginFrontPageState extends ConsumerState<LoginFrontPage> {
         (index) => SizedBox(
           width: 45,
           height: 55,
-          child: Focus(
-            onKeyEvent: (node, event) {
-              if (event is KeyDownEvent &&
-                  event.logicalKey == LogicalKeyboardKey.paste) {
-                Clipboard.getData('text/plain').then((value) {
-                  if (value?.text != null) {
-                    final pastedText =
-                        value!.text!.replaceAll(RegExp(r'[^0-9]'), '');
-                    if (pastedText.isNotEmpty) {
-                      // Distribute pasted text across OTP fields
-                      for (int i = 0; i < pastedText.length && i < 6; i++) {
-                        _otpControllers[i].text = pastedText[i];
-                      }
-                      // Move focus to appropriate field
-                      if (pastedText.length < 6) {
-                        _otpFocusNodes[pastedText.length].requestFocus();
-                      }
-                    }
-                  }
-                });
-                return KeyEventResult.handled;
+          child: OTPTextField(
+            controller: _otpControllers[index],
+            focusNode: _otpFocusNodes[index],
+            onChanged: (value) {
+              // Handle normal typing
+              if (value.length == 1 && index < 5) {
+                _otpFocusNodes[index + 1].requestFocus();
               }
-              return KeyEventResult.ignored;
-            },
-            child: OTPTextField(
-              controller: _otpControllers[index],
-              focusNode: _otpFocusNodes[index],
-              onChanged: (value) {
-                if (value.length > 1) {
-                  // Handle paste from TextField paste operation
-                  final pastedText = value.replaceAll(RegExp(r'[^0-9]'), '');
-                  if (pastedText.isNotEmpty) {
-                    // Set first digit in current field
-                    _otpControllers[index].text = pastedText[0];
-
-                    // Distribute remaining digits
-                    for (int i = 1;
-                        i < pastedText.length && i + index < 6;
-                        i++) {
-                      _otpControllers[i + index].text = pastedText[i];
-                    }
-
-                    // Move focus to appropriate field
-                    int nextIndex = index + pastedText.length;
-                    if (nextIndex >= 6) nextIndex = 5;
-                    _otpFocusNodes[nextIndex].requestFocus();
+              // Handle paste
+              else if (value.length > 1) {
+                final pastedText = value.replaceAll(RegExp(r'[^0-9]'), '');
+                if (pastedText.isNotEmpty) {
+                  // Clear all fields first
+                  for (var controller in _otpControllers) {
+                    controller.clear();
                   }
-                } else if (value.isNotEmpty && index < 5) {
-                  _otpFocusNodes[index + 1].requestFocus();
+                  // Distribute digits across fields
+                  for (int i = 0; i < pastedText.length && i < 6; i++) {
+                    _otpControllers[i].text = pastedText[i];
+                  }
+                  // Focus on the next empty field or the last field
+                  final nextIndex =
+                      pastedText.length < 6 ? pastedText.length : 5;
+                  _otpFocusNodes[nextIndex].requestFocus();
                 }
-              },
-              onBackspace: () {
-                if (index > 0) {
-                  _otpControllers[index - 1].clear();
-                  _otpFocusNodes[index - 1].requestFocus();
-                }
-              },
-            ),
+              }
+            },
+            onBackspace: () {
+              if (index > 0) {
+                _otpControllers[index - 1].clear();
+                _otpFocusNodes[index - 1].requestFocus();
+              }
+            },
           ),
         ),
       ),
@@ -522,10 +497,9 @@ class _OTPTextFieldState extends State<OTPTextField> {
       focusNode: FocusNode(),
       onKey: (RawKeyEvent event) {
         if (event is RawKeyDownEvent) {
-          if (event.logicalKey == LogicalKeyboardKey.backspace) {
-            if (widget.controller.text.isEmpty) {
-              widget.onBackspace();
-            }
+          if (event.logicalKey == LogicalKeyboardKey.backspace &&
+              widget.controller.text.isEmpty) {
+            widget.onBackspace();
           }
         }
       },
@@ -534,7 +508,7 @@ class _OTPTextFieldState extends State<OTPTextField> {
         focusNode: widget.focusNode,
         textAlign: TextAlign.center,
         keyboardType: TextInputType.number,
-        maxLength: 6,
+        maxLength: 6, // Allow longer input for paste operations
         style: const TextStyle(
           fontSize: 24,
           fontWeight: FontWeight.bold,
@@ -564,21 +538,21 @@ class _OTPTextFieldState extends State<OTPTextField> {
           filled: true,
         ),
         onChanged: (value) {
-          if (value.length > 1) {
-            // If pasted text is longer than 1 character
-            final pastedText =
-                value.replaceAll(RegExp(r'[^0-9]'), ''); // Keep only numbers
-            if (pastedText.isNotEmpty) {
-              widget.controller.text = pastedText[0];
-              widget.onChanged(pastedText);
-            }
+          if (value.isEmpty) {
+            widget.onBackspace();
           } else {
             widget.onChanged(value);
+            // If it's a single character, keep it
+            if (value.length == 1) {
+              widget.controller.text = value[0];
+              widget.controller.selection = TextSelection.fromPosition(
+                TextPosition(offset: widget.controller.text.length),
+              );
+            }
           }
         },
         inputFormatters: [
           FilteringTextInputFormatter.digitsOnly,
-          LengthLimitingTextInputFormatter(6),
         ],
       ),
     );

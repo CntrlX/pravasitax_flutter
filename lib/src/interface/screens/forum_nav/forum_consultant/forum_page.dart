@@ -320,6 +320,11 @@ class ForumPageConsultant extends ConsumerWidget {
           );
         },
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showCreateCategoryDialog,
+        backgroundColor: primaryColor,
+        child: Icon(Icons.add, color: Colors.white),
+      ),
     );
   }
 }
