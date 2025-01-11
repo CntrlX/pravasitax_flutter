@@ -1,9 +1,10 @@
-package com.example.pravasitax_flutter;
+package com.capitaire.pravasitax;
 
-import io.flutter.app.FlutterApplication;
 import androidx.multidex.MultiDexApplication;
+import io.flutter.embedding.engine.FlutterEngine;
+import io.flutter.embedding.engine.dart.DartExecutor;
 
-public class MultidexApplication extends FlutterApplication {
+public class MultidexApplication extends MultiDexApplication {
     @Override
     public void onCreate() {
         super.onCreate();

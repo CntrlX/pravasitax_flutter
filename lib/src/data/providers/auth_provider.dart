@@ -8,22 +8,34 @@ class AuthState {
   final bool isAuthenticated;
   final String? token;
   final String? error;
+  final String? userType;
+  final String? userId;
+  final bool isNewUser;
 
   AuthState({
     this.isAuthenticated = false,
     this.token,
     this.error,
+    this.userType,
+    this.userId,
+    this.isNewUser = false,
   });
 
   AuthState copyWith({
     bool? isAuthenticated,
     String? token,
     String? error,
+    String? userType,
+    String? userId,
+    bool? isNewUser,
   }) {
     return AuthState(
       isAuthenticated: isAuthenticated ?? this.isAuthenticated,
       token: token ?? this.token,
       error: error ?? this.error,
+      userType: userType ?? this.userType,
+      userId: userId ?? this.userId,
+      isNewUser: isNewUser ?? this.isNewUser,
     );
   }
 }
@@ -38,11 +50,15 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<void> _initializeAuthState() async {
     final token = await SecureStorageService.getAuthToken();
     final isLoggedIn = await SecureStorageService.isLoggedIn();
+    final userType = await SecureStorageService.getUserType();
+    final userId = await SecureStorageService.getUserId();
 
     if (token != null && isLoggedIn) {
       state = state.copyWith(
         isAuthenticated: true,
         token: token,
+        userType: userType,
+        userId: userId,
       );
     }
   }
@@ -73,11 +89,20 @@ class AuthNotifier extends StateNotifier<AuthState> {
           name: 'AuthNotifier.verifyOTP');
 
       final token = response['token'] as String;
+      final userType = response['user_type'] as String;
+      final userId = response['user_id'] as String;
+      final isNewUser = response['new_user'] as bool;
+
       await SecureStorageService.saveAuthToken(token);
+      await SecureStorageService.saveUserType(userType);
+      await SecureStorageService.saveUserId(userId);
 
       state = state.copyWith(
         isAuthenticated: true,
         token: token,
+        userType: userType,
+        userId: userId,
+        isNewUser: isNewUser,
         error: null,
       );
 
@@ -92,8 +117,16 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<void> logout() async {
-    await SecureStorageService.clearCredentials();
-    state = AuthState();
+    try {
+      developer.log('Logging out user', name: 'AuthNotifier.logout');
+      await SecureStorageService.clearCredentials();
+      state = AuthState();
+      developer.log('Logout successful', name: 'AuthNotifier.logout');
+    } catch (e) {
+      developer.log('Error during logout',
+          error: e.toString(), name: 'AuthNotifier.logout');
+      rethrow;
+    }
   }
 }
 

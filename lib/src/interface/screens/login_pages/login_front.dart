@@ -2,8 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pravasitax_flutter/src/core/theme/app_theme.dart';
+import 'package:pravasitax_flutter/src/data/api/push_notifications_api.dart';
 import 'package:pravasitax_flutter/src/data/providers/auth_provider.dart';
+import 'package:pravasitax_flutter/src/data/services/get_fcm_token.dart';
+import 'package:pravasitax_flutter/src/data/services/initialize_notifications.dart';
 import 'dart:developer' as developer;
+
+import 'package:pravasitax_flutter/src/data/services/secure_storage_service.dart';
 
 class LoginFrontPage extends ConsumerStatefulWidget {
   const LoginFrontPage({Key? key}) : super(key: key);
@@ -271,31 +276,7 @@ class _LoginFrontPageState extends ConsumerState<LoginFrontPage> {
                       ),
                     ),
                     const SizedBox(height: 40),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: List.generate(
-                        6,
-                        (index) => SizedBox(
-                          width: 45,
-                          height: 55,
-                          child: OTPTextField(
-                            controller: _otpControllers[index],
-                            focusNode: _otpFocusNodes[index],
-                            onChanged: (value) {
-                              if (value.isNotEmpty && index < 5) {
-                                _otpFocusNodes[index + 1].requestFocus();
-                              }
-                            },
-                            onBackspace: () {
-                              if (index > 0) {
-                                _otpControllers[index - 1].clear();
-                                _otpFocusNodes[index - 1].requestFocus();
-                              }
-                            },
-                          ),
-                        ),
-                      ),
-                    ),
+                    _buildOtpFields(),
                     const SizedBox(height: 40),
                     SizedBox(
                       width: double.infinity,
@@ -397,11 +378,22 @@ class _LoginFrontPageState extends ConsumerState<LoginFrontPage> {
       }
 
       if (authState.isAuthenticated) {
-        developer.log('Authentication successful, navigating to home',
+        developer.log(
+            'Authentication successful, navigating based on user type',
             name: 'LoginFrontPage._verifyOTP');
         if (mounted) {
+          final api = ref.read(pushNotificationsAPIProvider);
+          final fcm = await getFcmToken();
+          api.registerFCMToken(authState.userId ?? '', fcm);
+      await    initializeNoitifications();
           Navigator.of(context).pop(); // Pop OTP dialog
-          Navigator.of(context).pushReplacementNamed('/home');
+
+          // Navigate based on user type
+          if (authState.userType == 'staff') {
+            Navigator.of(context).pushReplacementNamed('/home_consultant');
+          } else {
+            Navigator.of(context).pushReplacementNamed('/home');
+          }
         }
       } else {
         developer.log('Authentication failed: Invalid OTP',
@@ -426,6 +418,53 @@ class _LoginFrontPageState extends ConsumerState<LoginFrontPage> {
         );
       }
     }
+  }
+
+  Widget _buildOtpFields() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: List.generate(
+        6,
+        (index) => SizedBox(
+          width: 45,
+          height: 55,
+          child: OTPTextField(
+            controller: _otpControllers[index],
+            focusNode: _otpFocusNodes[index],
+            onChanged: (value) {
+              // Handle normal typing
+              if (value.length == 1 && index < 5) {
+                _otpFocusNodes[index + 1].requestFocus();
+              }
+              // Handle paste
+              else if (value.length > 1) {
+                final pastedText = value.replaceAll(RegExp(r'[^0-9]'), '');
+                if (pastedText.isNotEmpty) {
+                  // Clear all fields first
+                  for (var controller in _otpControllers) {
+                    controller.clear();
+                  }
+                  // Distribute digits across fields
+                  for (int i = 0; i < pastedText.length && i < 6; i++) {
+                    _otpControllers[i].text = pastedText[i];
+                  }
+                  // Focus on the next empty field or the last field
+                  final nextIndex =
+                      pastedText.length < 6 ? pastedText.length : 5;
+                  _otpFocusNodes[nextIndex].requestFocus();
+                }
+              }
+            },
+            onBackspace: () {
+              if (index > 0) {
+                _otpControllers[index - 1].clear();
+                _otpFocusNodes[index - 1].requestFocus();
+              }
+            },
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -467,10 +506,9 @@ class _OTPTextFieldState extends State<OTPTextField> {
       focusNode: FocusNode(),
       onKey: (RawKeyEvent event) {
         if (event is RawKeyDownEvent) {
-          if (event.logicalKey == LogicalKeyboardKey.backspace) {
-            if (widget.controller.text.isEmpty) {
-              widget.onBackspace();
-            }
+          if (event.logicalKey == LogicalKeyboardKey.backspace &&
+              widget.controller.text.isEmpty) {
+            widget.onBackspace();
           }
         }
       },
@@ -479,7 +517,7 @@ class _OTPTextFieldState extends State<OTPTextField> {
         focusNode: widget.focusNode,
         textAlign: TextAlign.center,
         keyboardType: TextInputType.number,
-        maxLength: 1,
+        maxLength: 6, // Allow longer input for paste operations
         style: const TextStyle(
           fontSize: 24,
           fontWeight: FontWeight.bold,
@@ -509,11 +547,22 @@ class _OTPTextFieldState extends State<OTPTextField> {
           filled: true,
         ),
         onChanged: (value) {
-          if (value.isNotEmpty) {
+          if (value.isEmpty) {
+            widget.onBackspace();
+          } else {
             widget.onChanged(value);
+            // If it's a single character, keep it
+            if (value.length == 1) {
+              widget.controller.text = value[0];
+              widget.controller.selection = TextSelection.fromPosition(
+                TextPosition(offset: widget.controller.text.length),
+              );
+            }
           }
         },
-        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+        inputFormatters: [
+          FilteringTextInputFormatter.digitsOnly,
+        ],
       ),
     );
   }

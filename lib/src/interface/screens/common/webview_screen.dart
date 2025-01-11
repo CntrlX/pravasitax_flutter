@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pravasitax_flutter/src/data/providers/chat_provider.dart';
+import 'package:pravasitax_flutter/src/interface/screens/chat_nav/chat_pages/chat_screen.dart';
+import 'package:pravasitax_flutter/src/data/services/secure_storage_service.dart';
 
-class WebViewScreen extends StatefulWidget {
+class WebViewScreen extends ConsumerStatefulWidget {
   final String url;
   final String title;
 
@@ -14,10 +18,10 @@ class WebViewScreen extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<WebViewScreen> createState() => _WebViewScreenState();
+  ConsumerState<WebViewScreen> createState() => _WebViewScreenState();
 }
 
-class _WebViewScreenState extends State<WebViewScreen> {
+class _WebViewScreenState extends ConsumerState<WebViewScreen> {
   late final WebViewController controller;
   bool isLoading = true;
 
@@ -48,6 +52,12 @@ class _WebViewScreenState extends State<WebViewScreen> {
     controller
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(const Color(0x00000000))
+      ..addJavaScriptChannel(
+        'FlutterChannel',
+        onMessageReceived: (JavaScriptMessage message) {
+          _handleServiceButtonClick(message.message);
+        },
+      )
       ..setNavigationDelegate(
         NavigationDelegate(
           onPageStarted: (String url) {
@@ -60,6 +70,8 @@ class _WebViewScreenState extends State<WebViewScreen> {
           onPageFinished: (String url) {
             // Double-ensure header removal with JavaScript
             _removePageHeader();
+            // Add click handlers for service buttons
+            _addServiceButtonHandlers();
             setState(() {
               isLoading = false;
             });
@@ -70,6 +82,67 @@ class _WebViewScreenState extends State<WebViewScreen> {
         ),
       )
       ..loadRequest(Uri.parse(widget.url));
+  }
+
+  // Add click handlers for service buttons
+  void _addServiceButtonHandlers() {
+    controller.runJavaScript('''
+      document.querySelectorAll('.actionBtn').forEach(function(button) {
+        button.addEventListener('click', function(e) {
+          e.preventDefault();
+          var mainLabel = button.parentElement.parentElement.querySelector('.mainLabel');
+          var serviceName = mainLabel ? mainLabel.textContent.trim() : button.textContent.trim();
+          FlutterChannel.postMessage(serviceName);
+        });
+      });
+    ''');
+  }
+
+  // Handle service button clicks
+  Future<void> _handleServiceButtonClick(String serviceName) async {
+    final userToken = await SecureStorageService.getAuthToken();
+    if (userToken == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please login to continue')),
+        );
+      }
+      return;
+    }
+
+    try {
+      final conversation = await ref.read(createConversationProvider((
+        userToken: userToken,
+        title: serviceName,
+        type: 'Sales',
+      )).future);
+
+      // Send initial message
+      await ref.read(sendMessageProvider((
+        userToken: userToken,
+        conversationId: conversation.id,
+        message: 'Hi, I would like to know more about ${serviceName}.',
+      )).future);
+
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => UserChatScreen(
+              title: serviceName,
+              imageUrl: 'https://pravasitax.com/assets/images/logo.png',
+              conversationId: conversation.id,
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to create chat: $e')),
+        );
+      }
+    }
   }
 
   // Inject CSS to immediately hide headers

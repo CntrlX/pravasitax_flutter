@@ -3,28 +3,47 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pravasitax_flutter/mainpage.dart';
 import 'package:pravasitax_flutter/src/interface/screens/chat_nav/chat_page.dart';
 import 'package:pravasitax_flutter/src/interface/screens/feed_nav/feed_page.dart';
-import 'package:pravasitax_flutter/src/interface/screens/forum_nav/forum_page.dart';
+import 'package:pravasitax_flutter/src/interface/screens/forum_nav/forum_consultant/forum_page.dart';
+import 'package:pravasitax_flutter/src/interface/screens/forum_nav/forum_user/forum_list.dart';
+import 'package:pravasitax_flutter/src/interface/screens/forum_nav/forum_user/forum_page.dart';
 import 'package:pravasitax_flutter/src/interface/screens/i_hub_nav/hub_page.dart';
 import 'package:pravasitax_flutter/src/interface/screens/main_pages/home_page.dart';
 import 'package:pravasitax_flutter/src/interface/screens/main_pages/notification.dart';
 import 'package:pravasitax_flutter/src/interface/screens/main_pages/profile_page.dart'; // Import ProfilePage
+import 'package:pravasitax_flutter/src/data/services/secure_storage_service.dart';
 
 class MainPageConsultantPage extends StatefulWidget {
   @override
-  _MainPageState createState() => _MainPageState();
+  _MainPageConsultantState createState() => _MainPageConsultantState();
 }
 
-class _MainPageState extends State<MainPage> {
+class _MainPageConsultantState extends State<MainPageConsultantPage> {
   int _selectedIndex = 0;
-
-  // List of pages to display for each tab
-  final List<Widget> _widgetOptions = <Widget>[
+  String? userToken;
+  List<Widget> _widgetOptions = [
     HomePage(), // Home Page
     FeedPage(), // Feed Page
     HubPage(), // I-Hub Page
-    ForumPage(), // Forum Page
+    Container(), // Placeholder for Forum Page
     ChatPage(), // Chat Page
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserToken();
+  }
+
+  Future<void> _loadUserToken() async {
+    final token = await SecureStorageService.getAuthToken();
+    setState(() {
+      userToken = token;
+      // Update Forum page with actual token
+      if (userToken != null) {
+        _widgetOptions[3] = ForumPageConsultant(userToken: userToken!);
+      }
+    });
+  }
 
   // Method to update the selected index when an item is tapped
   void _onItemTapped(int index) {
@@ -46,6 +65,8 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
         title: Row(
           children: [
             Image.asset(
@@ -61,7 +82,6 @@ class _MainPageState extends State<MainPage> {
             icon:
                 Icon(Icons.notifications_active_outlined), // Notification icon
             onPressed: () {
-              // Navigate to NotificationPage when pressed
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => NotificationPage()),
@@ -70,17 +90,16 @@ class _MainPageState extends State<MainPage> {
           ),
           GestureDetector(
             onTap: () {
-              // Navigate to ProfilePage when the profile image is tapped
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => ProfilePage()),
               );
             },
             child: Padding(
-              padding: const EdgeInsets.all(8.0), // Add padding
+              padding: const EdgeInsets.all(8.0),
               child: CircleAvatar(
                 backgroundImage: NetworkImage(
-                  'https://example.com/profile_pic.png', // Replace with actual URL for profile image
+                  'https://example.com/profile_pic.png',
                 ),
                 radius: 20,
               ),
@@ -88,11 +107,9 @@ class _MainPageState extends State<MainPage> {
           ),
         ],
       ),
-
-      // The body will dynamically change based on the selected index
-      body: _widgetOptions[_selectedIndex],
-
-      // Bottom Navigation Bar
+      body: _widgetOptions.isNotEmpty
+          ? _widgetOptions[_selectedIndex]
+          : Center(child: CircularProgressIndicator()),
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(

@@ -42,12 +42,14 @@ _$ServiceImpl _$$ServiceImplFromJson(Map<String, dynamic> json) =>
     _$ServiceImpl(
       service: json['service'] as String,
       url: json['url'] as String?,
+      image: json['image'] as String?,
     );
 
 Map<String, dynamic> _$$ServiceImplToJson(_$ServiceImpl instance) =>
     <String, dynamic>{
       'service': instance.service,
       'url': instance.url,
+      'image': instance.image,
     };
 
 _$ScenarioImpl _$$ScenarioImplFromJson(Map<String, dynamic> json) =>
@@ -83,12 +85,14 @@ _$TaxToolImpl _$$TaxToolImplFromJson(Map<String, dynamic> json) =>
     _$TaxToolImpl(
       title: json['title'] as String,
       url: json['url'] as String?,
+      image: json['image'] as String?,
     );
 
 Map<String, dynamic> _$$TaxToolImplToJson(_$TaxToolImpl instance) =>
     <String, dynamic>{
       'title': instance.title,
       'url': instance.url,
+      'image': instance.image,
     };
 
 _$EventImpl _$$EventImplFromJson(Map<String, dynamic> json) => _$EventImpl(
