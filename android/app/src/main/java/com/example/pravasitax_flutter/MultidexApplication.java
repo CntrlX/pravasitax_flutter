@@ -1,4 +1,4 @@
-package com.example.pravasitax_flutter;
+package com.capitaire.pravasitax;
 
 import androidx.multidex.MultiDexApplication;
 import io.flutter.embedding.engine.FlutterEngine;

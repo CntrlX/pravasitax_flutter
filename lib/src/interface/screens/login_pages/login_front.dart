@@ -2,8 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pravasitax_flutter/src/core/theme/app_theme.dart';
+import 'package:pravasitax_flutter/src/data/api/push_notifications_api.dart';
 import 'package:pravasitax_flutter/src/data/providers/auth_provider.dart';
+import 'package:pravasitax_flutter/src/data/services/get_fcm_token.dart';
+import 'package:pravasitax_flutter/src/data/services/initialize_notifications.dart';
 import 'dart:developer' as developer;
+
+import 'package:pravasitax_flutter/src/data/services/secure_storage_service.dart';
 
 class LoginFrontPage extends ConsumerStatefulWidget {
   const LoginFrontPage({Key? key}) : super(key: key);
@@ -377,6 +382,10 @@ class _LoginFrontPageState extends ConsumerState<LoginFrontPage> {
             'Authentication successful, navigating based on user type',
             name: 'LoginFrontPage._verifyOTP');
         if (mounted) {
+          final api = ref.read(pushNotificationsAPIProvider);
+          final fcm = await getFcmToken();
+          api.registerFCMToken(authState.userId ?? '', fcm);
+      await    initializeNoitifications();
           Navigator.of(context).pop(); // Pop OTP dialog
 
           // Navigate based on user type
