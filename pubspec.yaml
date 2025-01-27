@@ -2,7 +2,7 @@ name: pravasitax_flutter
 description: "A new Flutter project."
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.0.0+1
+version: 0.0.1+1
 
 environment:
   sdk: '>=3.4.3 <4.0.0'
@@ -55,6 +55,9 @@ dependencies:
   firebase_core: ^3.10.0
   firebase_crashlytics: ^4.3.0
   firebase_analytics: ^11.4.0
+  socket_io_client: ^3.0.2
+  flutter_launcher_icons: ^0.14.3
+  rename_app: ^1.6.2
 
 
 
@@ -68,3 +71,8 @@ dev_dependencies:
   json_serializable: ^6.7.1
 
 # Additional configuration for your project
+flutter_launcher_icons:
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  image_path: 'assets/pravasi_logo.png'

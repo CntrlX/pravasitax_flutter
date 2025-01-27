@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pravasitax_flutter/mainpage.dart';
+import 'package:pravasitax_flutter/src/data/providers/chat_provider.dart';
 import 'package:pravasitax_flutter/src/interface/screens/chat_nav/chat_page.dart';
 import 'package:pravasitax_flutter/src/interface/screens/feed_nav/feed_page.dart';
 import 'package:pravasitax_flutter/src/interface/screens/forum_nav/forum_consultant/forum_page.dart';
@@ -12,14 +14,15 @@ import 'package:pravasitax_flutter/src/interface/screens/main_pages/notification
 import 'package:pravasitax_flutter/src/interface/screens/main_pages/profile_page.dart'; // Import ProfilePage
 import 'package:pravasitax_flutter/src/data/services/secure_storage_service.dart';
 
-class MainPageConsultantPage extends StatefulWidget {
+class MainPageConsultantPage extends ConsumerStatefulWidget {
   @override
   _MainPageConsultantState createState() => _MainPageConsultantState();
 }
 
-class _MainPageConsultantState extends State<MainPageConsultantPage> {
+class _MainPageConsultantState extends ConsumerState<MainPageConsultantPage> {
   int _selectedIndex = 0;
   String? userToken;
+    late final webSocketClient;
   List<Widget> _widgetOptions = [
     HomePage(), // Home Page
     FeedPage(), // Feed Page
@@ -36,6 +39,9 @@ class _MainPageConsultantState extends State<MainPageConsultantPage> {
 
   Future<void> _loadUserToken() async {
     final token = await SecureStorageService.getAuthToken();
+    final userId = await SecureStorageService.getUserId();
+       webSocketClient = ref.read(socketIoClientProvider);
+    webSocketClient.connect(userId, ref);
     setState(() {
       userToken = token;
       // Update Forum page with actual token

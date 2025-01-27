@@ -65,7 +65,7 @@ class Conversation {
   }
 }
 
-class Message {
+class MessageModel {
   final String id;
   final String conversationId;
   final String senderId;
@@ -75,7 +75,7 @@ class Message {
   final bool isDelivered;
   final bool isRead;
 
-  Message({
+  MessageModel({
     required this.id,
     required this.conversationId,
     required this.senderId,
@@ -86,7 +86,7 @@ class Message {
     required this.isRead,
   });
 
-  factory Message.fromJson(Map<String, dynamic> json) {
+  factory MessageModel.fromJson(Map<String, dynamic> json) {
     DateTime parseCustomDate(String dateStr) {
       try {
         // First try parsing as ISO format
@@ -107,12 +107,13 @@ class Message {
       }
     }
 
-    return Message(
+    return MessageModel(
       id: json['_id'] ?? '',
       conversationId: json['conversation_id'] ?? '',
       senderId: json['sender'] ?? '',
       content: json['message'] ?? json['content'] ?? '',
-      type: json['type'] ?? '',
+      type: json['type'] ?? 
+     json['sender_type'] ?? '',
       createdAt: parseCustomDate(
           json['created_at'] ?? DateTime.now().toIso8601String()),
       isDelivered: (json['delivered'] as List?)?.isNotEmpty ?? false,

@@ -43,6 +43,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     final isLoggedIn = await SecureStorageService.isLoggedIn();
 
     if (isLoggedIn) {
+          final token = await SecureStorageService.getAuthToken();
+    final userId = await SecureStorageService.getUserId();
+   developer. log('userId : $userId');
+  developer.  log('token : $token');
       // Get both stored values and auth state
       final storedUserType = await SecureStorageService.getUserType();
       final authState = ref.read(authProvider);

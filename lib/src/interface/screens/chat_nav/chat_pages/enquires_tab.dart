@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pravasitax_flutter/src/data/providers/chat_provider.dart';
 import 'package:pravasitax_flutter/src/data/services/secure_storage_service.dart';
 import 'package:pravasitax_flutter/src/interface/screens/chat_nav/chat_pages/chat_screen.dart';
+import 'package:pravasitax_flutter/src/interface/screens/chat_nav/chat_pages/chat_screen_test.dart';
 
 class EnquiriesTab extends ConsumerWidget {
   const EnquiriesTab({Key? key}) : super(key: key);
@@ -42,11 +43,13 @@ class EnquiriesTab extends ConsumerWidget {
                     : null;
 
                 return GestureDetector(
-                  onTap: () {
+                  onTap: () async {
+                        final userId = await SecureStorageService.getUserId();
+                        final userToken = await SecureStorageService.getAuthToken();
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => UserChatScreen(
+                        builder: (context) => IndividualPage(userId:userId??'' , userToken: userToken??'',
                           title: conversation.title,
                           imageUrl: staff?.avatar ??
                               'https://pravasitax.com/assets/images/logo.png',

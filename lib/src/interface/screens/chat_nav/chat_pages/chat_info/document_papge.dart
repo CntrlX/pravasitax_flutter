@@ -13,7 +13,7 @@ class ChatDocumentsPage extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(top: 20.0),
       child: ListView.builder(
-        itemCount: 5, // Number of document items
+        itemCount: 5, 
         itemBuilder: (context, index) {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),

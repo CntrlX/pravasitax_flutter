@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pravasitax_flutter/src/interface/screens/chat_nav/chat_pages/chat_screen_test.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
@@ -48,6 +49,7 @@ class _WebViewScreenState extends ConsumerState<WebViewScreen> {
       (controller.platform as AndroidWebViewController)
           .setMediaPlaybackRequiresUserGesture(false);
     }
+  controller.enableZoom(false);
 
     controller
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
@@ -82,6 +84,7 @@ class _WebViewScreenState extends ConsumerState<WebViewScreen> {
         ),
       )
       ..loadRequest(Uri.parse(widget.url));
+  
   }
 
   // Add click handlers for service buttons
@@ -123,12 +126,14 @@ class _WebViewScreenState extends ConsumerState<WebViewScreen> {
         conversationId: conversation.id,
         message: 'Hi, I would like to know more about ${serviceName}.',
       )).future);
+ 
+    final userId = await SecureStorageService.getUserId();
 
       if (mounted) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => UserChatScreen(
+            builder: (context) => IndividualPage(userId:userId??'' , userToken: userToken??'',
               title: serviceName,
               imageUrl: 'https://pravasitax.com/assets/images/logo.png',
               conversationId: conversation.id,

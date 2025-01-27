@@ -3,7 +3,7 @@ import 'package:pravasitax_flutter/src/interface/screens/chat_nav/chat_pages/enq
 import 'package:pravasitax_flutter/src/interface/screens/chat_nav/chat_pages/services_tab.dart';
 
 class ChatPage extends StatelessWidget {
-  const ChatPage({Key? key}) : super(key: key);
+  const ChatPage({super.key});
 
   @override
   Widget build(BuildContext context) {
