@@ -202,15 +202,15 @@ class _MainPageState extends ConsumerState<MainPage> {
           ],
         ),
         actions: [
-          IconButton(
-            icon: Icon(Icons.notifications_active_outlined),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => NotificationPage()),
-              );
-            },
-          ),
+          // IconButton(
+          //   icon: Icon(Icons.notifications_active_outlined),
+          //   onPressed: () {
+          //     Navigator.push(
+          //       context,
+          //       MaterialPageRoute(builder: (context) => NotificationPage()),
+          //     );
+          //   },
+          // ),
           GestureDetector(
             onTap: () {
               Navigator.push(
