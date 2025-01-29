@@ -4,13 +4,13 @@ class Event {
   final String description;
   final DateTime date;
   final String time;
-  final String type; // 'online' or 'offline'
+  final String type; 
   final double price;
   final int availableSeats;
   final List<Speaker> speakers;
   final String? venue;
   final String? thumbnail;
-  final String status; // 'LIVE', 'UPCOMING', etc.
+  final String status;
 
   Event({
     required this.id,

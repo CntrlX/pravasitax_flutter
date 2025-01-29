@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:pravasitax_flutter/src/data/providers/chat_provider.dart';
 import 'package:pravasitax_flutter/src/interface/screens/chat_nav/chat_page.dart';
 import 'package:pravasitax_flutter/src/interface/screens/feed_nav/feed_page.dart';
 import 'package:pravasitax_flutter/src/interface/screens/forum_nav/forum_user/forum_list.dart';
@@ -23,7 +26,7 @@ class _MainPageState extends ConsumerState<MainPage> {
   int _selectedIndex = 0;
   String? userToken;
   late List<Widget> _widgetOptions = [];
-
+  late final webSocketClient;
   @override
   void initState() {
     super.initState();
@@ -33,6 +36,11 @@ class _MainPageState extends ConsumerState<MainPage> {
 
   Future<void> _loadUserToken() async {
     final token = await SecureStorageService.getAuthToken();
+    final userId = await SecureStorageService.getUserId();
+    log('userId : $userId');
+    log('token : $token');
+    webSocketClient = ref.read(socketIoClientProvider);
+    webSocketClient.connect(userId, ref);
     setState(() {
       userToken = token;
       _updateWidgetOptions();
